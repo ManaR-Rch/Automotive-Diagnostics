@@ -61,7 +61,7 @@ public class DevisService {
         devis.setEstAutomatique(false);
 
         if (devisDTO.getServiceId() != null) {
-            Service service = serviceRepository.findById(devisDTO.getServiceId()).orElse(null);
+            com.automotive.model.Service service = serviceRepository.findById(devisDTO.getServiceId()).orElse(null);
             devis.setService(service);
         }
 

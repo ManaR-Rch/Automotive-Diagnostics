@@ -19,7 +19,7 @@ public class Parametre {
     private Long id;
 
     @Column(unique = true, nullable = false)
-    private String cle;
+    private String cleTechnique;
 
     @Column(nullable = false)
     private String valeur;
