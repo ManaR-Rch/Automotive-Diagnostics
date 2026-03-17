@@ -1,181 +1,38 @@
-/* Global Styles */
-* {
-  margin: 0;
-  padding: 0;
-  box-sizing: border-box;
+﻿@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { background-color: #0a0a0a; color: white; font-family: Inter, sans-serif; scrollbar-width: thin; scrollbar-color: #c11414 #1a1a1a; }
+  ::-webkit-scrollbar { width: 6px; }
+  ::-webkit-scrollbar-track { background: #1a1a1a; }
+  ::-webkit-scrollbar-thumb { background: #c11414; border-radius: 4px; }
 }
 
-:root {
-  --primary-color: #2c3e50;
-  --secondary-color: #3498db;
-  --accent-color: #e74c3c;
-  --success-color: #27ae60;
-  --warning-color: #f39c12;
-  --light-bg: #ecf0f1;
-  --white: #ffffff;
-  --text-dark: #2c3e50;
-  --text-light: #7f8c8d;
-  --border-radius: 8px;
-  --box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-  --transition: all 0.3s ease;
+@layer components {
+  .btn-primary { @apply bg-primary-600 hover:bg-primary-700 text-white font-semibold px-6 py-2.5 rounded-lg transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-2 focus:ring-offset-dark-800 disabled:opacity-50 disabled:cursor-not-allowed; }
+  .btn-secondary { @apply bg-dark-500 hover:bg-dark-400 text-white font-semibold px-6 py-2.5 rounded-lg border border-dark-400 transition-all duration-200; }
+  .btn-outline { @apply border border-primary-600 text-primary-500 hover:bg-primary-600 hover:text-white font-semibold px-6 py-2.5 rounded-lg transition-all duration-200; }
+  .card { @apply bg-dark-700 border border-dark-500 rounded-xl p-6; }
+  .form-input { @apply w-full bg-dark-600 border border-dark-400 text-white placeholder-gray-500 rounded-lg px-4 py-3 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent transition-all duration-200; }
+  .form-label { @apply block text-sm font-medium text-gray-300 mb-1; }
+  .badge { @apply text-xs font-semibold px-2.5 py-1 rounded-full border; }
+  .badge-CONFIRME { @apply badge bg-green-900/50 text-green-400 border-green-700; }
+  .badge-EN_ATTENTE { @apply badge bg-yellow-900/50 text-yellow-400 border-yellow-700; }
+  .badge-ANNULE { @apply badge bg-red-900/50 text-red-400 border-red-700; }
+  .badge-EN_COURS { @apply badge bg-blue-900/50 text-blue-400 border-blue-700; }
+  .badge-TERMINE { @apply badge bg-gray-800 text-gray-400 border-gray-600; }
+  .nav-link { @apply text-gray-300 hover:text-white hover:bg-dark-600 px-4 py-2 rounded-lg text-sm font-medium transition-all duration-200; }
+  .nav-link-active { @apply text-white bg-primary-700 px-4 py-2 rounded-lg text-sm font-medium; }
+  .table-row { @apply border-b border-dark-500 hover:bg-dark-600/50 transition-colors duration-150; }
+  .table-header { @apply text-xs font-semibold text-gray-400 uppercase tracking-wider px-4 py-3; }
+  .table-cell { @apply px-4 py-3 text-sm text-gray-200; }
 }
 
-body {
-  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-  background-color: var(--light-bg);
-  color: var(--text-dark);
-  line-height: 1.6;
-}
-
-html, body {
-  height: 100%;
-}
-
-/* Container Styles */
-.container {
-  max-width: 1200px;
-  margin: 0 auto;
-  padding: 0 20px;
-}
-
-/* Button Styles */
-.btn {
-  padding: 10px 20px;
-  border: none;
-  border-radius: var(--border-radius);
-  cursor: pointer;
-  font-size: 14px;
-  font-weight: 600;
-  transition: var(--transition);
-  text-decoration: none;
-  display: inline-block;
-}
-
-.btn-primary {
-  background-color: var(--primary-color);
-  color: var(--white);
-}
-
-.btn-primary:hover {
-  background-color: #34495e;
-  box-shadow: var(--box-shadow);
-}
-
-.btn-secondary {
-  background-color: var(--secondary-color);
-  color: var(--white);
-}
-
-.btn-secondary:hover {
-  background-color: #2980b9;
-  box-shadow: var(--box-shadow);
-}
-
-.btn-accent {
-  background-color: var(--accent-color);
-  color: var(--white);
-}
-
-.btn-accent:hover {
-  background-color: #c0392b;
-  box-shadow: var(--box-shadow);
-}
-
-/* Card Styles */
-.card {
-  background-color: var(--white);
-  border-radius: var(--border-radius);
-  padding: 20px;
-  box-shadow: var(--box-shadow);
-  transition: var(--transition);
-}
-
-.card:hover {
-  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.15);
-  transform: translateY(-2px);
-}
-
-.card-title {
-  font-size: 18px;
-  font-weight: 700;
-  color: var(--text-dark);
-  margin-bottom: 10px;
-}
-
-.card-text {
-  color: var(--text-light);
-  font-size: 14px;
-}
-
-/* Form Styles */
-.form-group {
-  margin-bottom: 15px;
-}
-
-.form-group label {
-  display: block;
-  margin-bottom: 5px;
-  font-weight: 600;
-  color: var(--text-dark);
-}
-
-.form-group input,
-.form-group textarea,
-.form-group select {
-  width: 100%;
-  padding: 10px;
-  border: 1px solid #bdc3c7;
-  border-radius: var(--border-radius);
-  font-size: 14px;
-  transition: var(--transition);
-}
-
-.form-group input:focus,
-.form-group textarea:focus,
-.form-group select:focus {
-  outline: none;
-  border-color: var(--secondary-color);
-  box-shadow: 0 0 0 3px rgba(52, 152, 219, 0.1);
-}
-
-/* Layout Styles */
-.app-layout {
-  display: flex;
-  height: 100vh;
-}
-
-.app-content {
-  flex: 1;
-  display: flex;
-  flex-direction: column;
-  overflow: hidden;
-}
-
-.main-content {
-  flex: 1;
-  overflow-y: auto;
-  padding: 20px;
-}
-
-/* Responsive */
-@media (max-width: 768px) {
-  .app-layout {
-    flex-direction: column;
-  }
-
-  .container {
-    padding: 0 15px;
-  }
-
-  .btn {
-    padding: 8px 16px;
-    font-size: 12px;
-  }
-}
-
-/* Utility Classes */
-.mt-20 { margin-top: 20px; }
-.mb-20 { margin-bottom: 20px; }
-.p-20 { padding: 20px; }
-.text-center { text-align: center; }
-.text-muted { color: var(--text-light); }
+.fade-in { animation: fadeIn 0.3s ease-in; }
+@keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+.slide-in { animation: slideIn 0.3s ease-out; }
+@keyframes slideIn { from { transform: translateX(-20px); opacity: 0; } to { transform: translateX(0); opacity: 1; } }
