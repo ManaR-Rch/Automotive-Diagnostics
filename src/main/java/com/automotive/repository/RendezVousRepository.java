@@ -16,9 +16,11 @@ public interface RendezVousRepository extends JpaRepository<RendezVous, Long> {
 
     List<RendezVous> findByStatut(RendezVous.Statut statut);
 
+    long countByStatut(RendezVous.Statut statut);
+
     @Query("SELECT r FROM RendezVous r WHERE r.dateRdv BETWEEN :dateDebut AND :dateFin")
     List<RendezVous> findByDateRange(@Param("dateDebut") LocalDateTime dateDebut,
-                                    @Param("dateFin") LocalDateTime dateFin);
+            @Param("dateFin") LocalDateTime dateFin);
 
     @Query("SELECT r FROM RendezVous r WHERE r.user.id = :userId ORDER BY r.dateRdv DESC")
     List<RendezVous> findByUserIdOrderByDateDesc(@Param("userId") Long userId);
