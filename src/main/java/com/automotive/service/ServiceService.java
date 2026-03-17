@@ -19,6 +19,13 @@ public class ServiceService {
                 .orElse(null);
     }
 
+    public List<ServiceDTO> getAllServices() {
+        return serviceRepository.findAll()
+                .stream()
+                .map(this::convertToDTO)
+                .collect(Collectors.toList());
+    }
+
     public List<ServiceDTO> getAllActiveServices() {
         return serviceRepository.findByActifTrue()
                 .stream()
@@ -49,6 +56,16 @@ public class ServiceService {
                     service.setDureeEstimee(serviceDTO.getDureeEstimee());
                     service.setPrixMin(serviceDTO.getPrixMin());
                     service.setPrixMax(serviceDTO.getPrixMax());
+                    service.setOrdreAffichage(serviceDTO.getOrdreAffichage());
+                    return convertToDTO(serviceRepository.save(service));
+                })
+                .orElse(null);
+    }
+
+    public ServiceDTO toggleServiceStatus(Long id) {
+        return serviceRepository.findById(id)
+                .map(service -> {
+                    service.setActif(!service.getActif());
                     return convertToDTO(serviceRepository.save(service));
                 })
                 .orElse(null);
@@ -60,6 +77,14 @@ public class ServiceService {
             return true;
         }
         return false;
+    }
+
+    public long countServices() {
+        return serviceRepository.count();
+    }
+
+    public long countActiveServices() {
+        return serviceRepository.countByActifTrue();
     }
 
     private ServiceDTO convertToDTO(Service service) {
