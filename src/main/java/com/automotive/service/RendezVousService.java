@@ -72,7 +72,7 @@ public class RendezVousService {
                     rendezVous.setHeureDebut(rendezVousDTO.getHeureDebut());
                     rendezVous.setHeureFin(rendezVousDTO.getHeureFin());
                     rendezVous.setDescriptionProbleme(rendezVousDTO.getDescriptionProbleme());
-                    rendezVous.setUrgence(RendezVous.Urgence.valueOf(rendezVousDTO.getUrgence()));
+                    rendezVous.setUrgence(parseUrgence(rendezVousDTO.getUrgence()));
                     rendezVous.setNotesAdmin(rendezVousDTO.getNotesAdmin());
                     return convertToDTO(rendezVousRepository.save(rendezVous));
                 })
@@ -96,6 +96,21 @@ public class RendezVousService {
         return false;
     }
 
+    public List<RendezVousDTO> getAllRendezVous() {
+        return rendezVousRepository.findAll()
+                .stream()
+                .map(this::convertToDTO)
+                .collect(Collectors.toList());
+    }
+
+    public long countRendezVous() {
+        return rendezVousRepository.count();
+    }
+
+    public long countByStatut(String statut) {
+        return rendezVousRepository.countByStatut(RendezVous.Statut.valueOf(statut));
+    }
+
     private RendezVousDTO convertToDTO(RendezVous rendezVous) {
         return RendezVousDTO.builder()
                 .id(rendezVous.getId())
@@ -106,7 +121,7 @@ public class RendezVousService {
                 .heureDebut(rendezVous.getHeureDebut())
                 .heureFin(rendezVous.getHeureFin())
                 .descriptionProbleme(rendezVous.getDescriptionProbleme())
-                .urgence(rendezVous.getUrgence().toString())
+                .urgence(normalizeUrgenceForDto(rendezVous.getUrgence()))
                 .statut(rendezVous.getStatut().toString())
                 .notesAdmin(rendezVous.getNotesAdmin())
                 .dateCreation(rendezVous.getDateCreation())
@@ -120,7 +135,30 @@ public class RendezVousService {
                 .heureDebut(rendezVousDTO.getHeureDebut())
                 .heureFin(rendezVousDTO.getHeureFin())
                 .descriptionProbleme(rendezVousDTO.getDescriptionProbleme())
-                .urgence(RendezVous.Urgence.valueOf(rendezVousDTO.getUrgence()))
+                .urgence(parseUrgence(rendezVousDTO.getUrgence()))
                 .build();
+    }
+
+    private RendezVous.Urgence parseUrgence(String urgence) {
+        if (urgence == null || urgence.isBlank()) {
+            return RendezVous.Urgence.NORMALE;
+        }
+
+        String normalized = urgence.trim().toUpperCase();
+        return switch (normalized) {
+            case "FAIBLE" -> RendezVous.Urgence.FAIBLE;
+            case "NORMALE" -> RendezVous.Urgence.NORMALE;
+            case "HAUTE" -> RendezVous.Urgence.HAUTE;
+            case "CRITIQUE" -> RendezVous.Urgence.CRITIQUE;
+            case "URGENTE" -> RendezVous.Urgence.URGENTE;
+            default -> throw new IllegalArgumentException("Niveau d'urgence invalide: " + urgence);
+        };
+    }
+
+    private String normalizeUrgenceForDto(RendezVous.Urgence urgence) {
+        if (urgence == null) {
+            return RendezVous.Urgence.NORMALE.name();
+        }
+        return urgence == RendezVous.Urgence.URGENTE ? RendezVous.Urgence.HAUTE.name() : urgence.name();
     }
 }
