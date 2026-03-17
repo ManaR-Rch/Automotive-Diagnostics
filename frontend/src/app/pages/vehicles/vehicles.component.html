@@ -1,56 +1,158 @@
-<div class="page-container">
-  <div class="page-header">
-    <h2>Vehicles</h2>
-    <button class="btn btn-secondary">+ Add Vehicle</button>
+﻿<div class="flex min-h-screen bg-dark-900">
+  <app-sidebar></app-sidebar>
+  <main class="flex-1 overflow-auto">
+    <div class="p-6 lg:p-8 fade-in">
+      <!-- Header -->
+      <div class="flex items-center justify-between mb-8">
+        <div>
+          <h1 class="text-2xl font-bold text-white">Mes Véhicules</h1>
+          <p class="text-gray-500 text-sm mt-1">Gérez vos véhicules enregistrés</p>
+        </div>
+        <button (click)="openCreate()" class="btn-primary flex items-center gap-2">
+          <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/></svg>
+          Ajouter un véhicule
+        </button>
+      </div>
+
+      <!-- Error -->
+      <div *ngIf="error$ | async as err" class="mb-6 p-4 bg-red-900/30 border border-red-700 rounded-lg text-red-400 text-sm">{{ err }}</div>
+
+      <!-- Loading -->
+      <div *ngIf="loading$ | async" class="flex justify-center py-16">
+        <svg class="animate-spin w-10 h-10 text-primary-500" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"></path></svg>
+      </div>
+
+      <!-- Vehicles Grid -->
+      <ng-container *ngIf="!(loading$ | async)">
+        <div *ngIf="(vehicles$ | async)?.length; else empty" class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-5">
+          <div *ngFor="let v of (vehicles$ | async)" class="bg-dark-800 border border-dark-600 hover:border-primary-700 rounded-xl overflow-hidden transition-all duration-200 hover:-translate-y-1 group">
+            <!-- Card Header -->
+            <div class="bg-gradient-to-r from-dark-700 to-dark-800 px-5 py-4 border-b border-dark-600 flex items-center justify-between">
+              <div class="flex items-center gap-3">
+                <div class="w-10 h-10 bg-primary-900/60 rounded-lg flex items-center justify-center">
+                  <svg class="w-5 h-5 text-primary-400" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 17a2 2 0 100-4 2 2 0 000 4zM16 17a2 2 0 100-4 2 2 0 000 4zM5 9l2-5h10l2 5H5zM3 9h18v5a2 2 0 01-2 2H5a2 2 0 01-2-2V9z"/></svg>
+                </div>
+                <div>
+                  <h3 class="text-white font-bold">{{ v.marque }} {{ v.modele }}</h3>
+                  <p class="text-primary-400 text-xs font-mono">VIN: {{ v.vin || 'N/A' }}</p>
+                </div>
+              </div>
+              <span *ngIf="v.estPrincipal" class="text-xs bg-primary-900/50 text-primary-300 border border-primary-700 px-2 py-0.5 rounded-full">Principal</span>
+            </div>
+            <!-- Card Body -->
+            <div class="px-5 py-4 grid grid-cols-2 gap-3 text-sm">
+              <div>
+                <span class="text-gray-600 text-xs uppercase tracking-wide">Année</span>
+                <p class="text-white mt-0.5">{{ v.annee }}</p>
+              </div>
+              <div>
+                <span class="text-gray-600 text-xs uppercase tracking-wide">Carburant</span>
+                <p class="text-white mt-0.5">{{ v.carburant }}</p>
+              </div>
+              <div>
+                <span class="text-gray-600 text-xs uppercase tracking-wide">Type</span>
+                <p class="text-white mt-0.5">—</p>
+              </div>
+              <div>
+                <span class="text-gray-600 text-xs uppercase tracking-wide">Kilométrage</span>
+                <p class="text-white mt-0.5">{{ v.kilometrage | number }} km</p>
+              </div>
+              <div *ngIf="v.vin">
+                <span class="text-gray-600 text-xs uppercase tracking-wide">VIN</span>
+                <p class="text-white mt-0.5 font-mono text-xs">{{ v.vin }}</p>
+              </div>
+            </div>
+            <!-- Card Footer -->
+            <div class="px-5 py-3 border-t border-dark-600 flex gap-2">
+              <button (click)="openEdit(v)" class="flex-1 py-2 text-sm text-gray-300 hover:text-white bg-dark-700 hover:bg-dark-600 rounded-lg transition-colors">Modifier</button>
+              <button (click)="confirmDelete(v.id!)" class="flex-1 py-2 text-sm text-red-400 hover:text-white bg-red-900/20 hover:bg-red-800/50 rounded-lg transition-colors">Supprimer</button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Empty State -->
+        <ng-template #empty>
+          <div class="flex flex-col items-center justify-center py-24 text-center">
+            <div class="w-20 h-20 bg-dark-800 rounded-full flex items-center justify-center mb-4">
+              <svg class="w-10 h-10 text-gray-600" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M8 17a2 2 0 100-4 2 2 0 000 4zM16 17a2 2 0 100-4 2 2 0 000 4zM5 9l2-5h10l2 5H5zM3 9h18v5a2 2 0 01-2 2H5a2 2 0 01-2-2V9z"/></svg>
+            </div>
+            <h3 class="text-white font-semibold mb-2">Aucun véhicule enregistré</h3>
+            <p class="text-gray-500 text-sm mb-6">Commencez par ajouter votre premier véhicule</p>
+            <button (click)="openCreate()" class="btn-primary">Ajouter mon premier véhicule</button>
+          </div>
+        </ng-template>
+      </ng-container>
+    </div>
+  </main>
+</div>
+
+<!-- Create/Edit Modal -->
+<div *ngIf="showModal" class="fixed inset-0 bg-black/70 backdrop-blur-sm z-50 flex items-center justify-center p-4" (click)="closeModal()">
+  <div class="bg-dark-800 border border-dark-600 rounded-2xl w-full max-w-xl max-h-[90vh] overflow-y-auto shadow-2xl" (click)="$event.stopPropagation()">
+    <div class="flex items-center justify-between px-6 py-4 border-b border-dark-600">
+      <h2 class="text-white font-bold text-lg">{{ editMode ? 'Modifier le véhicule' : 'Ajouter un véhicule' }}</h2>
+      <button (click)="closeModal()" class="text-gray-500 hover:text-white p-1 hover:bg-dark-600 rounded-lg transition-colors">
+        <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+      </button>
+    </div>
+    <form [formGroup]="form" (ngSubmit)="submit()" class="p-6 space-y-4">
+      <div class="grid grid-cols-2 gap-4">
+        <div>
+          <label class="form-label">Marque *</label>
+          <input formControlName="marque" type="text" placeholder="Toyota, BMW…" class="form-input" [class.border-red-600]="field('marque')?.invalid && field('marque')?.touched">
+          <p *ngIf="field('marque')?.invalid && field('marque')?.touched" class="text-red-400 text-xs mt-1">Marque requise</p>
+        </div>
+        <div>
+          <label class="form-label">Modèle *</label>
+          <input formControlName="modele" type="text" placeholder="Corolla, Serie 3…" class="form-input" [class.border-red-600]="field('modele')?.invalid && field('modele')?.touched">
+          <p *ngIf="field('modele')?.invalid && field('modele')?.touched" class="text-red-400 text-xs mt-1">Modèle requis</p>
+        </div>
+      </div>
+      <div class="grid grid-cols-2 gap-4">
+        <div>
+          <label class="form-label">Année *</label>
+          <input formControlName="annee" type="number" placeholder="2020" class="form-input" [class.border-red-600]="field('annee')?.invalid && field('annee')?.touched">
+        </div>
+        <div>
+          <label class="form-label">Carburant</label>
+          <select formControlName="carburant" class="form-input">
+            <option *ngFor="let c of carburantOptions" [value]="c">{{ c }}</option>
+          </select>
+        </div>
+      </div>
+      <div class="grid grid-cols-2 gap-4">
+        <div>
+          <label class="form-label">Kilométrage</label>
+          <input formControlName="kilometrage" type="number" placeholder="50000" class="form-input">
+        </div>
+        <div>
+          <label class="form-label">N° Châssis (VIN)</label>
+          <input formControlName="vin" type="text" placeholder="VIN optionnel" class="form-input font-mono">
+        </div>
+      </div>
+      <div class="flex items-center gap-3 pt-1">
+        <input formControlName="estPrincipal" id="principal" type="checkbox" class="w-4 h-4 rounded accent-primary-600">
+        <label for="principal" class="text-gray-300 text-sm cursor-pointer">Définir comme véhicule principal</label>
+      </div>
+      <div class="flex gap-3 pt-2">
+        <button type="button" (click)="closeModal()" class="flex-1 btn-secondary">Annuler</button>
+        <button type="submit" class="flex-1 btn-primary">{{ editMode ? 'Enregistrer' : 'Ajouter' }}</button>
+      </div>
+    </form>
   </div>
-  
-  <div class="vehicles-grid">
-    <div class="card vehicle-card">
-      <div class="vehicle-image">🚙</div>
-      <h3 class="card-title">Toyota Camry</h3>
-      <div class="vehicle-details">
-        <p><strong>Make:</strong> Toyota</p>
-        <p><strong>Model:</strong> Camry</p>
-        <p><strong>Year:</strong> 2022</p>
-        <p><strong>Owner:</strong> John Doe</p>
-        <p><strong>Plate:</strong> ABC-1234</p>
-      </div>
-      <div class="vehicle-actions">
-        <button class="btn-link">View Details</button>
-        <button class="btn-link">Edit</button>
-      </div>
+</div>
+
+<!-- Delete Confirm -->
+<div *ngIf="deleteConfirmId" class="fixed inset-0 bg-black/70 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+  <div class="bg-dark-800 border border-red-900 rounded-2xl p-6 w-full max-w-sm text-center shadow-2xl">
+    <div class="w-14 h-14 bg-red-900/40 rounded-full flex items-center justify-center mx-auto mb-4">
+      <svg class="w-7 h-7 text-red-400" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/></svg>
     </div>
-    
-    <div class="card vehicle-card">
-      <div class="vehicle-image">🚗</div>
-      <h3 class="card-title">Honda Civic</h3>
-      <div class="vehicle-details">
-        <p><strong>Make:</strong> Honda</p>
-        <p><strong>Model:</strong> Civic</p>
-        <p><strong>Year:</strong> 2023</p>
-        <p><strong>Owner:</strong> Jane Smith</p>
-        <p><strong>Plate:</strong> XYZ-5678</p>
-      </div>
-      <div class="vehicle-actions">
-        <button class="btn-link">View Details</button>
-        <button class="btn-link">Edit</button>
-      </div>
-    </div>
-    
-    <div class="card vehicle-card">
-      <div class="vehicle-image">🚕</div>
-      <h3 class="card-title">BMW 3 Series</h3>
-      <div class="vehicle-details">
-        <p><strong>Make:</strong> BMW</p>
-        <p><strong>Model:</strong> 3 Series</p>
-        <p><strong>Year:</strong> 2021</p>
-        <p><strong>Owner:</strong> Mike Johnson</p>
-        <p><strong>Plate:</strong> BMW-9012</p>
-      </div>
-      <div class="vehicle-actions">
-        <button class="btn-link">View Details</button>
-        <button class="btn-link">Edit</button>
-      </div>
+    <h3 class="text-white font-bold mb-2">Supprimer ce véhicule ?</h3>
+    <p class="text-gray-500 text-sm mb-6">Cette action est irréversible.</p>
+    <div class="flex gap-3">
+      <button (click)="deleteConfirmId = null" class="flex-1 btn-secondary">Annuler</button>
+      <button (click)="deleteVehicle()" class="flex-1 bg-red-600 hover:bg-red-700 text-white font-medium py-2.5 px-4 rounded-lg transition-colors">Supprimer</button>
     </div>
   </div>
 </div>
