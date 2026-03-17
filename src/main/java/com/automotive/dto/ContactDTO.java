@@ -12,6 +12,7 @@ import java.time.LocalDateTime;
 @Builder
 public class ContactDTO {
     private Long id;
+    private Long userId;
     private String nom;
     private String prenom;
     private String email;
