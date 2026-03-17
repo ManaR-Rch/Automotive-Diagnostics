@@ -44,11 +44,8 @@ public class Service {
     @Column(name = "ordre_affichage")
     private Integer ordreAffichage;
 
-    @OneToMany(mappedBy = "service", cascade = CascadeType.ALL, fetch = jakarta.persistence.FetchType.LAZY)
+    @OneToMany(mappedBy = "service", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private Set<RendezVous> rendezVous;
-
-    @OneToMany(mappedBy = "service", cascade = CascadeType.ALL, fetch = jakarta.persistence.FetchType.LAZY)
-    private Set<Devis> devis;
 
     public enum Categorie {
         MAINTENANCE, REPARATION, DIAGNOSTIC, CONTROLE_TECHNIQUE, AUTRE
