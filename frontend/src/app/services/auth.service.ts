@@ -15,11 +15,15 @@ export class AuthService {
   login(req: LoginRequest): Observable<AuthResponse> {
     return this.http.post<AuthResponse>(`${this.API}/login`, req).pipe(
       tap(res => {
+        console.log('[AuthService.login] Response received:', res);
         if (this.isBrowser) {
           localStorage.setItem('token', res.token);
           localStorage.setItem('user', JSON.stringify({
             email: res.email, nom: res.nom, prenom: res.prenom, role: res.role
           }));
+          console.log('[AuthService.login] Token stored in localStorage');
+        } else {
+          console.log('[AuthService.login] SSR mode - token not stored');
         }
       })
     );
