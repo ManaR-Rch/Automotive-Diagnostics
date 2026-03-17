@@ -1,83 +1,132 @@
-<div class="dashboard-container">
-  <h2>Dashboard</h2>
-  
-  <div class="stats-grid">
-    <div class="stat-card">
-      <div class="stat-icon">🚗</div>
-      <div class="stat-content">
-        <h4>Total Vehicles</h4>
-        <p class="stat-number">24</p>
+<div class="flex min-h-screen bg-dark-900">
+  <app-sidebar></app-sidebar>
+  <main class="flex-1 overflow-auto">
+    <div class="p-6 lg:p-8 fade-in">
+      <!-- Header -->
+      <div class="mb-8">
+        <h1 class="text-2xl font-bold text-white">Bonjour, <span class="text-primary-400">{{ (user$ | async)?.prenom }}</span> 👋</h1>
+        <p class="text-gray-500 text-sm mt-1">Voici un aperçu de votre espace personnel</p>
+      </div>
+
+      <!-- Stats Cards -->
+      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5 mb-8">
+        <div class="bg-dark-800 border border-dark-600 rounded-xl p-5 relative overflow-hidden hover:border-primary-700 transition-colors">
+          <div class="absolute top-0 right-0 w-20 h-20 bg-primary-700 rounded-full blur-2xl opacity-10 -translate-y-4 translate-x-4"></div>
+          <div class="w-10 h-10 bg-blue-900/50 rounded-lg flex items-center justify-center mb-3">
+            <svg class="w-5 h-5 text-blue-400" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 17a2 2 0 100-4 2 2 0 000 4zM16 17a2 2 0 100-4 2 2 0 000 4zM5 9l2-5h10l2 5H5zM3 9h18v5a2 2 0 01-2 2H5a2 2 0 01-2-2V9z"/></svg>
+          </div>
+          <p class="text-2xl font-black text-white">{{ (vehicles$ | async)?.length || 0 }}</p>
+          <p class="text-gray-500 text-sm">Mes Véhicules</p>
+        </div>
+
+        <div class="bg-dark-800 border border-dark-600 rounded-xl p-5 relative overflow-hidden hover:border-primary-700 transition-colors">
+          <div class="absolute top-0 right-0 w-20 h-20 bg-green-700 rounded-full blur-2xl opacity-10 -translate-y-4 translate-x-4"></div>
+          <div class="w-10 h-10 bg-green-900/50 rounded-lg flex items-center justify-center mb-3">
+            <svg class="w-5 h-5 text-green-400" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+          </div>
+          <p class="text-2xl font-black text-white">{{ confirmedCount$ | async }}</p>
+          <p class="text-gray-500 text-sm">RDV Confirmés</p>
+        </div>
+
+        <div class="bg-dark-800 border border-dark-600 rounded-xl p-5 relative overflow-hidden hover:border-primary-700 transition-colors">
+          <div class="absolute top-0 right-0 w-20 h-20 bg-yellow-700 rounded-full blur-2xl opacity-10 -translate-y-4 translate-x-4"></div>
+          <div class="w-10 h-10 bg-yellow-900/50 rounded-lg flex items-center justify-center mb-3">
+            <svg class="w-5 h-5 text-yellow-400" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+          </div>
+          <p class="text-2xl font-black text-white">{{ pendingCount$ | async }}</p>
+          <p class="text-gray-500 text-sm">En Attente</p>
+        </div>
+
+        <div class="bg-dark-800 border border-dark-600 rounded-xl p-5 relative overflow-hidden hover:border-primary-700 transition-colors">
+          <div class="absolute top-0 right-0 w-20 h-20 bg-primary-700 rounded-full blur-2xl opacity-10 -translate-y-4 translate-x-4"></div>
+          <div class="w-10 h-10 bg-primary-900/50 rounded-lg flex items-center justify-center mb-3">
+            <svg class="w-5 h-5 text-primary-400" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg>
+          </div>
+          <p class="text-2xl font-black text-white">{{ (appointments$ | async)?.length || 0 }}</p>
+          <p class="text-gray-500 text-sm">Total Rendez-vous</p>
+        </div>
+      </div>
+
+      <!-- Quick Actions -->
+      <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-8">
+        <a routerLink="/appointments" class="group bg-gradient-to-br from-primary-900/50 to-dark-800 border border-primary-800/30 hover:border-primary-600 rounded-xl p-6 transition-all duration-200 hover:-translate-y-1">
+          <div class="w-12 h-12 bg-primary-700/40 rounded-xl flex items-center justify-center mb-4 group-hover:bg-primary-600 transition-colors">
+            <svg class="w-6 h-6 text-primary-300" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/></svg>
+          </div>
+          <h3 class="text-white font-bold mb-1">Nouveau RDV</h3>
+          <p class="text-gray-500 text-sm">Prendre un rendez-vous</p>
+        </a>
+        <a routerLink="/vehicles" class="group bg-dark-800 border border-dark-600 hover:border-primary-700 rounded-xl p-6 transition-all duration-200 hover:-translate-y-1">
+          <div class="w-12 h-12 bg-dark-600 rounded-xl flex items-center justify-center mb-4 group-hover:bg-primary-900/50 transition-colors">
+            <svg class="w-6 h-6 text-gray-400 group-hover:text-primary-400" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/></svg>
+          </div>
+          <h3 class="text-white font-bold mb-1">Ajouter Véhicule</h3>
+          <p class="text-gray-500 text-sm">Enregistrer un nouveau véhicule</p>
+        </a>
+        <a routerLink="/services" class="group bg-dark-800 border border-dark-600 hover:border-primary-700 rounded-xl p-6 transition-all duration-200 hover:-translate-y-1">
+          <div class="w-12 h-12 bg-dark-600 rounded-xl flex items-center justify-center mb-4 group-hover:bg-primary-900/50 transition-colors">
+            <svg class="w-6 h-6 text-gray-400 group-hover:text-primary-400" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
+          </div>
+          <h3 class="text-white font-bold mb-1">Voir Services</h3>
+          <p class="text-gray-500 text-sm">Découvrir nos prestations</p>
+        </a>
+      </div>
+
+      <!-- Recent Appointments + My Vehicles -->
+      <div class="grid grid-cols-1 xl:grid-cols-2 gap-6">
+        <!-- Recent RDV -->
+        <div class="bg-dark-800 border border-dark-600 rounded-xl overflow-hidden">
+          <div class="flex items-center justify-between px-6 py-4 border-b border-dark-600">
+            <h2 class="text-white font-bold">Derniers Rendez-vous</h2>
+            <a routerLink="/appointments" class="text-primary-400 hover:text-primary-300 text-sm">Voir tout →</a>
+          </div>
+          <div class="divide-y divide-dark-600">
+            <ng-container *ngIf="(appointments$ | async)?.length; else noAppts">
+              <div *ngFor="let rdv of (recentAppointments$ | async)" class="px-6 py-4 hover:bg-dark-700/50 transition-colors">
+                <div class="flex items-center justify-between">
+                  <div>
+                    <p class="text-white text-sm font-medium">RDV #{{ rdv.id }}</p>
+                    <p class="text-gray-500 text-xs mt-0.5">{{ rdv.dateRdv | date:'dd MMM yyyy' }}</p>
+                  </div>
+                  <span [ngClass]="getStatutClass(rdv.statut || '')">{{ rdv.statut }}</span>
+                </div>
+              </div>
+            </ng-container>
+            <ng-template #noAppts>
+              <div class="px-6 py-8 text-center text-gray-600 text-sm">
+                Aucun rendez-vous pour le moment
+              </div>
+            </ng-template>
+          </div>
+        </div>
+
+        <!-- My Vehicles -->
+        <div class="bg-dark-800 border border-dark-600 rounded-xl overflow-hidden">
+          <div class="flex items-center justify-between px-6 py-4 border-b border-dark-600">
+            <h2 class="text-white font-bold">Mes Véhicules</h2>
+            <a routerLink="/vehicles" class="text-primary-400 hover:text-primary-300 text-sm">Voir tout →</a>
+          </div>
+          <div class="divide-y divide-dark-600">
+            <ng-container *ngIf="(vehicles$ | async)?.length; else noVehicles">
+              <div *ngFor="let v of (recentVehicles$ | async)" class="px-6 py-4 flex items-center gap-4 hover:bg-dark-700/50 transition-colors">
+                <div class="w-10 h-10 bg-dark-600 rounded-lg flex items-center justify-center flex-shrink-0">
+                  <svg class="w-5 h-5 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 17a2 2 0 100-4 2 2 0 000 4zM16 17a2 2 0 100-4 2 2 0 000 4zM5 9l2-5h10l2 5H5zM3 9h18v5a2 2 0 01-2 2H5a2 2 0 01-2-2V9z"/></svg>
+                </div>
+                <div class="flex-1 min-w-0">
+                  <p class="text-white text-sm font-medium truncate">{{ v.marque }} {{ v.modele }}</p>
+                  <p class="text-gray-500 text-xs">{{ v.annee }} • {{ v.carburant }}</p>
+                </div>
+                <span *ngIf="v.estPrincipal" class="text-xs bg-primary-900/50 text-primary-400 border border-primary-800 px-2 py-0.5 rounded-full">Principal</span>
+              </div>
+            </ng-container>
+            <ng-template #noVehicles>
+              <div class="px-6 py-8 text-center text-gray-600 text-sm">
+                Aucun véhicule enregistré
+              </div>
+            </ng-template>
+          </div>
+        </div>
       </div>
     </div>
-    
-    <div class="stat-card">
-      <div class="stat-icon">🔧</div>
-      <div class="stat-content">
-        <h4>Active Services</h4>
-        <p class="stat-number">8</p>
-      </div>
-    </div>
-    
-    <div class="stat-card">
-      <div class="stat-icon">📅</div>
-      <div class="stat-content">
-        <h4>Today's Appointments</h4>
-        <p class="stat-number">5</p>
-      </div>
-    </div>
-    
-    <div class="stat-card">
-      <div class="stat-icon">💰</div>
-      <div class="stat-content">
-        <h4>Monthly Revenue</h4>
-        <p class="stat-number">$12,450</p>
-      </div>
-    </div>
-  </div>
-  
-  <div class="dashboard-grid">
-    <div class="card">
-      <h3 class="card-title">Recent Appointments</h3>
-      <table class="simple-table">
-        <thead>
-          <tr>
-            <th>Date</th>
-            <th>Customer</th>
-            <th>Service</th>
-            <th>Status</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr>
-            <td>Jan 26, 2025</td>
-            <td>John Doe</td>
-            <td>Oil Change</td>
-            <td><span class="badge badge-success">Completed</span></td>
-          </tr>
-          <tr>
-            <td>Jan 25, 2025</td>
-            <td>Jane Smith</td>
-            <td>Tire Rotation</td>
-            <td><span class="badge badge-success">Completed</span></td>
-          </tr>
-          <tr>
-            <td>Jan 24, 2025</td>
-            <td>Mike Johnson</td>
-            <td>Brake Inspection</td>
-            <td><span class="badge badge-warning">Pending</span></td>
-          </tr>
-        </tbody>
-      </table>
-    </div>
-    
-    <div class="card">
-      <h3 class="card-title">Quick Actions</h3>
-      <div class="action-buttons">
-        <button class="btn btn-secondary">+ New Appointment</button>
-        <button class="btn btn-secondary">+ Add Vehicle</button>
-        <button class="btn btn-secondary">+ Create Quote</button>
-        <button class="btn btn-secondary">+ View Reports</button>
-      </div>
-    </div>
-  </div>
+  </main>
 </div>
