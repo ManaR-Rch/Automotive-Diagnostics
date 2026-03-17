@@ -9,6 +9,12 @@ export const authInterceptor: HttpInterceptorFn = (req, next) => {
   const isBrowser = isPlatformBrowser(inject(PLATFORM_ID));
   const token = isBrowser ? localStorage.getItem('token') : null;
 
+  console.log(`[AUTH-INTERCEPTOR] Request to ${req.url}`);
+  console.log(`[AUTH-INTERCEPTOR] Token present:`, !!token);
+  if (token) {
+    console.log(`[AUTH-INTERCEPTOR] Token: ${token.substring(0, 20)}...`);
+  }
+
   const authReq = token
     ? req.clone({ setHeaders: { Authorization: `Bearer ${token}` } })
     : req;
