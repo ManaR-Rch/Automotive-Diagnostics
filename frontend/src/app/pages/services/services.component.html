@@ -1,44 +1,81 @@
-<div class="page-container">
-  <div class="page-header">
-    <h2>Services</h2>
-    <button class="btn btn-secondary">+ Add Service</button>
+﻿<app-navbar></app-navbar>
+
+<!-- Hero Banner -->
+<section class="bg-dark-900 border-b border-dark-700 py-16">
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+    <span class="inline-block bg-primary-900/50 text-primary-400 text-xs font-bold uppercase tracking-widest px-4 py-1.5 rounded-full border border-primary-800 mb-4">Nos Prestations</span>
+    <h1 class="text-4xl md:text-5xl font-black text-white mb-4">Tous Nos <span class="text-primary-500">Services</span></h1>
+    <p class="text-gray-400 max-w-xl mx-auto">Des interventions professionnelles pour tous vos besoins automobiles. Qualité garantie, transparence assurée.</p>
   </div>
-  
-  <div class="services-grid">
-    <div class="card service-card">
-      <h3 class="card-title">Oil Change</h3>
-      <p class="card-text">Regular oil change service to keep your engine running smoothly.</p>
-      <div class="service-info">
-        <span class="badge">$49.99</span>
-        <span class="time">~30 mins</span>
-      </div>
+</section>
+
+<section class="bg-dark-900 min-h-screen py-12">
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <!-- Category Filters -->
+    <div class="flex flex-wrap gap-2 mb-10 justify-center">
+      <button *ngFor="let cat of categories"
+        (click)="setCategory(cat)"
+        [class.bg-primary-600]="activeCategory === cat"
+        [class.text-white]="activeCategory === cat"
+        [class.border-primary-600]="activeCategory === cat"
+        [class.bg-dark-800]="activeCategory !== cat"
+        [class.text-gray-400]="activeCategory !== cat"
+        [class.border-dark-600]="activeCategory !== cat"
+        class="px-4 py-2 rounded-full border text-sm font-medium transition-all duration-200 hover:border-primary-600 hover:text-white">
+        {{ cat }}
+      </button>
     </div>
-    
-    <div class="card service-card">
-      <h3 class="card-title">Tire Rotation</h3>
-      <p class="card-text">Professional tire rotation to ensure even wear and longevity.</p>
-      <div class="service-info">
-        <span class="badge">$39.99</span>
-        <span class="time">~45 mins</span>
-      </div>
+
+    <!-- Loading -->
+    <div *ngIf="loading$ | async" class="flex justify-center py-20">
+      <svg class="animate-spin w-10 h-10 text-primary-500" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"></path></svg>
     </div>
-    
-    <div class="card service-card">
-      <h3 class="card-title">Brake Inspection</h3>
-      <p class="card-text">Complete brake system inspection and maintenance.</p>
-      <div class="service-info">
-        <span class="badge">$59.99</span>
-        <span class="time">~1 hour</span>
-      </div>
-    </div>
-    
-    <div class="card service-card">
-      <h3 class="card-title">Battery Check</h3>
-      <p class="card-text">Battery health check and replacement if needed.</p>
-      <div class="service-info">
-        <span class="badge">$29.99</span>
-        <span class="time">~15 mins</span>
-      </div>
-    </div>
+
+    <!-- Services Grid -->
+    <ng-container *ngIf="!(loading$ | async)">
+      <ng-container *ngIf="services$ | async as allServices">
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          <ng-container *ngFor="let s of allServices">
+            <div *ngIf="activeCategory === 'TOUS' || s.categorie === activeCategory"
+              class="bg-dark-800 border border-dark-600 hover:border-primary-700 rounded-xl overflow-hidden transition-all duration-300 hover:-translate-y-1 hover:shadow-xl hover:shadow-primary-900/20 flex flex-col">
+              <div class="p-6 flex-1">
+                <div class="flex items-start justify-between mb-4">
+                  <div class="w-12 h-12 bg-primary-900/50 rounded-xl flex items-center justify-center">
+                    <svg class="w-6 h-6 text-primary-400" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
+                  </div>
+                  <span *ngIf="s.categorie" class="text-xs text-primary-400 bg-primary-900/30 border border-primary-800/50 px-2 py-0.5 rounded-full">{{ s.categorie }}</span>
+                </div>
+                <h3 class="text-white font-bold text-lg mb-2">{{ s.nom }}</h3>
+                <p class="text-gray-500 text-sm leading-relaxed">{{ s.description }}</p>
+
+                <div class="flex items-center gap-4 mt-4 text-sm">
+                  <div class="flex items-center gap-1.5 text-gray-500" *ngIf="s.dureeEstimee">
+                    <svg class="w-4 h-4 text-gray-600" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+                    {{ getDurationLabel(s.dureeEstimee) }}
+                  </div>
+                  <div class="flex items-center gap-1.5 text-green-400 font-semibold" *ngIf="s.actif !== false">
+                    <span class="w-1.5 h-1.5 bg-green-500 rounded-full"></span> Disponible
+                  </div>
+                </div>
+              </div>
+              <div class="px-6 pb-6 flex items-center justify-between mt-auto">
+                <div>
+                  <p class="text-gray-600 text-xs uppercase tracking-wide">Tarif</p>
+                  <p class="text-primary-400 font-black text-2xl">{{ s.prixMin | number:'1.0-0' }} - {{ s.prixMax | number:'1.0-0' }}<span class="text-sm font-normal text-gray-500"> MAD</span></p>
+                </div>
+                <a routerLink="/appointments" class="btn-primary text-sm">Réserver</a>
+              </div>
+            </div>
+          </ng-container>
+        </div>
+
+        <!-- Empty -->
+        <div *ngIf="allServices.length === 0" class="text-center py-20 text-gray-600">
+          <p class="text-lg">Aucun service disponible pour le moment</p>
+        </div>
+      </ng-container>
+    </ng-container>
   </div>
-</div>
+</section>
+
+<app-footer></app-footer>
