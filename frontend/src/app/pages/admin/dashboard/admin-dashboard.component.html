@@ -1,0 +1,87 @@
+<div class="flex min-h-screen bg-dark-900">
+  <app-sidebar></app-sidebar>
+  <main class="flex-1 overflow-auto p-6 lg:p-8">
+    <h1 class="text-2xl font-bold text-white mb-8">Administration • Dashboard</h1>
+
+    <div *ngIf="loading$ | async" class="flex justify-center py-16">
+      <svg class="animate-spin w-10 h-10 text-primary-500" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"></path></svg>
+    </div>
+
+    <div *ngIf="stats$ | async as s" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5 mb-8">
+      <div class="card"><p class="text-gray-500 text-xs uppercase">Total Utilisateurs</p><p class="text-white text-3xl font-black mt-2">{{ s.totalUsers }}</p></div>
+      <div class="card"><p class="text-gray-500 text-xs uppercase">Clients</p><p class="text-white text-3xl font-black mt-2">{{ s.totalClients }}</p></div>
+      <div class="card"><p class="text-gray-500 text-xs uppercase">Services</p><p class="text-white text-3xl font-black mt-2">{{ s.totalServices }}</p></div>
+      <div class="card"><p class="text-gray-500 text-xs uppercase">RDV Total</p><p class="text-white text-3xl font-black mt-2">{{ s.totalRendezVous }}</p></div>
+      <div class="card"><p class="text-gray-500 text-xs uppercase">Confirmé</p><p class="text-green-400 text-3xl font-black mt-2">{{ s.rdvConfirmes }}</p></div>
+      <div class="card"><p class="text-gray-500 text-xs uppercase">En Cours</p><p class="text-yellow-400 text-3xl font-black mt-2">{{ s.rdvEnCours }}</p></div>
+      <div class="card"><p class="text-gray-500 text-xs uppercase">Terminés</p><p class="text-blue-400 text-3xl font-black mt-2">{{ s.rdvTermines }}</p></div>
+      <div class="card"><p class="text-gray-500 text-xs uppercase">Annulés</p><p class="text-red-400 text-3xl font-black mt-2">{{ s.rdvAnnules }}</p></div>
+    </div>
+
+    <!-- Utilisateurs -->
+    <section class="mb-12">
+      <h2 class="text-xl font-bold text-white mb-4">Gestion des utilisateurs</h2>
+      <div class="overflow-x-auto rounded-lg bg-dark-800">
+        <table class="min-w-full text-sm">
+          <thead class="bg-dark-700 text-gray-400">
+            <tr>
+              <th class="px-4 py-2">Nom</th>
+              <th class="px-4 py-2">Prénom</th>
+              <th class="px-4 py-2">Email</th>
+              <th class="px-4 py-2">Téléphone</th>
+              <th class="px-4 py-2">Rôle</th>
+              <th class="px-4 py-2">Actif</th>
+              <th class="px-4 py-2">Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let u of users$ | async" class="border-b border-dark-700">
+              <td class="px-4 py-2 text-white">{{ u.nom }}</td>
+              <td class="px-4 py-2 text-white">{{ u.prenom }}</td>
+              <td class="px-4 py-2 text-primary-400">{{ u.email }}</td>
+              <td class="px-4 py-2 text-white">{{ u.telephone || '-' }}</td>
+              <td class="px-4 py-2 text-white">{{ u.role }}</td>
+              <td class="px-4 py-2">
+                <span [ngClass]="u.actif ? 'text-green-400' : 'text-red-400'">{{ u.actif ? 'Oui' : 'Non' }}</span>
+              </td>
+              <td class="px-4 py-2">
+                <!-- Actions: activer/désactiver, supprimer -->
+                <button class="btn btn-xs btn-primary mr-2">Activer/Désactiver</button>
+                <button class="btn btn-xs btn-danger">Supprimer</button>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- Rendez-vous -->
+    <section>
+      <h2 class="text-xl font-bold text-white mb-4">Tous les rendez-vous</h2>
+      <div class="overflow-x-auto rounded-lg bg-dark-800">
+        <table class="min-w-full text-sm">
+          <thead class="bg-dark-700 text-gray-400">
+            <tr>
+              <th class="px-4 py-2">Date</th>
+              <th class="px-4 py-2">Service</th>
+              <th class="px-4 py-2">Nom</th>
+              <th class="px-4 py-2">Téléphone</th>
+              <th class="px-4 py-2">Statut</th>
+              <th class="px-4 py-2">Notes</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let rdv of appointments$ | async" class="border-b border-dark-700">
+              <td class="px-4 py-2 text-white">{{ rdv.dateRdv | date:'short' }}</td>
+              <td class="px-4 py-2 text-white">{{ rdv.serviceId }}</td>
+              <td class="px-4 py-2 text-white">{{ getUserName(rdv.userId) }}</td>
+              <td class="px-4 py-2 text-white">{{ getUserPhone(rdv.userId) }}</td>
+              <td class="px-4 py-2 text-white">{{ rdv.statut }}</td>
+              <td class="px-4 py-2 text-white">{{ rdv.notesAdmin || '-' }}</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+  </main>
+</div>

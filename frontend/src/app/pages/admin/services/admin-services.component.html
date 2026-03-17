@@ -1,0 +1,46 @@
+<div class="flex min-h-screen bg-dark-900">
+  <app-sidebar></app-sidebar>
+  <main class="flex-1 overflow-auto p-6 lg:p-8">
+    <div class="flex items-center justify-between mb-6">
+      <h1 class="text-2xl font-bold text-white">Administration • Services</h1>
+      <button (click)="openCreate()" class="btn-primary">Nouveau service</button>
+    </div>
+
+    <div *ngIf="showForm" class="card mb-6">
+      <form [formGroup]="form" (ngSubmit)="save()" class="grid grid-cols-1 md:grid-cols-2 gap-3">
+        <input formControlName="nom" class="form-input" placeholder="Nom">
+        <input formControlName="categorie" class="form-input" placeholder="Catégorie">
+        <input formControlName="dureeEstimee" type="number" class="form-input" placeholder="Durée (min)">
+        <input formControlName="ordreAffichage" type="number" class="form-input" placeholder="Ordre affichage">
+        <input formControlName="prixMin" type="number" class="form-input" placeholder="Prix min">
+        <input formControlName="prixMax" type="number" class="form-input" placeholder="Prix max">
+        <textarea formControlName="description" rows="3" class="form-input md:col-span-2" placeholder="Description"></textarea>
+        <label class="text-gray-300 text-sm flex items-center gap-2 md:col-span-2"><input type="checkbox" formControlName="actif"> Service actif</label>
+        <div class="md:col-span-2 flex gap-3">
+          <button type="button" (click)="showForm = false" class="btn-secondary flex-1">Annuler</button>
+          <button type="submit" class="btn-primary flex-1">Enregistrer</button>
+        </div>
+      </form>
+    </div>
+
+    <div *ngIf="error$ | async as err" class="mb-4 p-3 text-red-400 bg-red-900/30 border border-red-800 rounded">{{ err }}</div>
+
+    <div class="card overflow-x-auto">
+      <table class="w-full text-sm">
+        <thead><tr class="text-left text-gray-500 border-b border-dark-600"><th class="py-3">Nom</th><th>Catégorie</th><th>Prix</th><th>Actif</th><th class="text-right">Actions</th></tr></thead>
+        <tbody class="divide-y divide-dark-600">
+          <tr *ngFor="let s of services$ | async" class="table-row">
+            <td class="py-3 text-white">{{ s.nom }}</td>
+            <td class="text-gray-400">{{ s.categorie }}</td>
+            <td class="text-gray-300">{{ s.prixMin }} - {{ s.prixMax }} MAD</td>
+            <td><span [class]="s.actif ? 'text-green-400' : 'text-red-400'">{{ s.actif ? 'Oui' : 'Non' }}</span></td>
+            <td class="text-right space-x-2">
+              <button (click)="openEdit(s)" class="px-3 py-1.5 rounded bg-dark-700 text-gray-300 hover:text-white">Modifier</button>
+              <button (click)="delete(s.id!)" class="px-3 py-1.5 rounded bg-red-900/40 text-red-400 hover:text-white">Supprimer</button>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </main>
+</div>

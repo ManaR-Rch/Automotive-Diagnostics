@@ -1,0 +1,41 @@
+<div class="flex min-h-screen bg-dark-900">
+  <app-sidebar></app-sidebar>
+  <main class="flex-1 overflow-auto p-6 lg:p-8">
+    <div class="flex items-center justify-between mb-6">
+      <h1 class="text-2xl font-bold text-white">Administration • Utilisateurs</h1>
+      <button (click)="showCreate = !showCreate" class="btn-primary">Nouvel utilisateur</button>
+    </div>
+
+    <div *ngIf="showCreate" class="card mb-6">
+      <form [formGroup]="form" (ngSubmit)="createUser()" class="grid grid-cols-1 md:grid-cols-3 gap-3">
+        <input formControlName="prenom" class="form-input" placeholder="Prénom">
+        <input formControlName="nom" class="form-input" placeholder="Nom">
+        <input formControlName="email" class="form-input" placeholder="Email">
+        <input formControlName="telephone" class="form-input" placeholder="Téléphone">
+        <select formControlName="role" class="form-input"><option value="CLIENT">CLIENT</option><option value="ADMIN">ADMIN</option></select>
+        <input formControlName="motDePasse" type="password" class="form-input" placeholder="Mot de passe">
+        <button class="btn-primary md:col-span-3" type="submit">Créer</button>
+      </form>
+    </div>
+
+    <div *ngIf="error$ | async as err" class="mb-4 p-3 text-red-400 bg-red-900/30 border border-red-800 rounded">{{ err }}</div>
+
+    <div class="card overflow-x-auto">
+      <table class="w-full text-sm">
+        <thead><tr class="text-left text-gray-500 border-b border-dark-600"><th class="py-3">Nom</th><th>Email</th><th>Role</th><th>État</th><th class="text-right">Actions</th></tr></thead>
+        <tbody class="divide-y divide-dark-600">
+          <tr *ngFor="let u of users$ | async" class="table-row">
+            <td class="py-3 text-white">{{ u.prenom }} {{ u.nom }}</td>
+            <td class="text-gray-400">{{ u.email }}</td>
+            <td class="text-gray-300">{{ u.role }}</td>
+            <td><span [class]="u.actif ? 'text-green-400' : 'text-red-400'">{{ u.actif ? 'Actif' : 'Inactif' }}</span></td>
+            <td class="text-right space-x-2">
+              <button (click)="toggleUser(u.id!)" class="px-3 py-1.5 rounded bg-dark-700 text-gray-300 hover:text-white">Toggle</button>
+              <button (click)="deleteUser(u.id!)" class="px-3 py-1.5 rounded bg-red-900/40 text-red-400 hover:text-white">Supprimer</button>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </main>
+</div>
