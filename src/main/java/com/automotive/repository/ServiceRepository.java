@@ -13,4 +13,6 @@ public interface ServiceRepository extends JpaRepository<Service, Long> {
     List<Service> findByCategorie(Service.Categorie categorie);
 
     List<Service> findByActifTrueOrderByOrdreAffichageAsc();
+
+    long countByActifTrue();
 }
