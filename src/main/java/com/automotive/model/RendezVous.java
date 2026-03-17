@@ -73,7 +73,7 @@ public class RendezVous {
     }
 
     public enum Urgence {
-        NORMALE, URGENTE
+        FAIBLE, NORMALE, HAUTE, CRITIQUE, URGENTE
     }
 
     public enum Statut {
