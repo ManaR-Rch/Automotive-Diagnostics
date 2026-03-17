@@ -1,0 +1,104 @@
+<div class="flex min-h-screen bg-dark-900">
+  <app-sidebar></app-sidebar>
+  <main class="flex-1 overflow-auto">
+    <div class="p-6 lg:p-8 fade-in max-w-3xl">
+      <div class="mb-8">
+        <h1 class="text-2xl font-bold text-white">Mon Profil</h1>
+        <p class="text-gray-500 text-sm mt-1">Gérez vos informations personnelles</p>
+      </div>
+
+      <!-- Success -->
+      <div *ngIf="saved" class="mb-6 p-4 bg-green-900/30 border border-green-700 rounded-lg text-green-400 text-sm flex items-center gap-2">
+        <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>
+        Profil mis à jour avec succès
+      </div>
+
+      <!-- Profile Card -->
+      <div class="bg-dark-800 border border-dark-600 rounded-2xl overflow-hidden mb-6">
+        <!-- Header -->
+        <div class="bg-gradient-to-r from-primary-900/30 to-dark-800 px-6 py-5 border-b border-dark-600 flex items-center justify-between">
+          <div class="flex items-center gap-4">
+            <div class="w-16 h-16 bg-primary-800 rounded-full flex items-center justify-center text-2xl font-black text-white">
+              {{ (user$ | async)?.prenom?.charAt(0) }}{{ (user$ | async)?.nom?.charAt(0) }}
+            </div>
+            <div>
+              <h2 class="text-white font-bold text-lg">{{ (user$ | async)?.prenom }} {{ (user$ | async)?.nom }}</h2>
+              <p class="text-gray-500 text-sm">{{ (user$ | async)?.email }}</p>
+            </div>
+          </div>
+          <div class="flex items-center gap-2">
+            <span *ngIf="(user$ | async)?.role === 'ADMIN'" class="text-xs bg-primary-900/50 text-primary-300 border border-primary-700 px-2.5 py-1 rounded-full font-medium">Admin</span>
+            <span *ngIf="(user$ | async)?.role !== 'ADMIN'" class="text-xs bg-dark-600 text-gray-400 border border-dark-500 px-2.5 py-1 rounded-full">Client</span>
+          </div>
+        </div>
+
+        <!-- Info Form -->
+        <div class="p-6">
+          <div class="flex items-center justify-between mb-4">
+            <h3 class="text-white font-semibold">Informations personnelles</h3>
+            <button (click)="editMode = !editMode" class="text-primary-400 hover:text-primary-300 text-sm flex items-center gap-1">
+              <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"/></svg>
+              {{ editMode ? 'Annuler' : 'Modifier' }}
+            </button>
+          </div>
+
+          <form [formGroup]="form" (ngSubmit)="saveProfile()">
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-4">
+              <div>
+                <label class="form-label">Prénom</label>
+                <input formControlName="prenom" type="text" class="form-input" [readonly]="!editMode" [class.bg-dark-900]="!editMode" [class.cursor-default]="!editMode">
+              </div>
+              <div>
+                <label class="form-label">Nom</label>
+                <input formControlName="nom" type="text" class="form-input" [readonly]="!editMode" [class.bg-dark-900]="!editMode" [class.cursor-default]="!editMode">
+              </div>
+              <div>
+                <label class="form-label">Email</label>
+                <input formControlName="email" type="email" class="form-input" [readonly]="!editMode" [class.bg-dark-900]="!editMode" [class.cursor-default]="!editMode">
+              </div>
+              <div>
+                <label class="form-label">Téléphone</label>
+                <input formControlName="telephone" type="tel" class="form-input" [readonly]="!editMode" [class.bg-dark-900]="!editMode" [class.cursor-default]="!editMode">
+              </div>
+            </div>
+            <button *ngIf="editMode" type="submit" class="btn-primary">Enregistrer les modifications</button>
+          </form>
+        </div>
+      </div>
+
+      <!-- Change Password -->
+      <div class="bg-dark-800 border border-dark-600 rounded-2xl overflow-hidden">
+        <div class="px-6 py-4 border-b border-dark-600 flex items-center justify-between">
+          <h3 class="text-white font-semibold">Sécurité</h3>
+          <button (click)="showPasswordForm = !showPasswordForm" class="text-primary-400 hover:text-primary-300 text-sm">
+            {{ showPasswordForm ? 'Annuler' : 'Changer le mot de passe' }}
+          </button>
+        </div>
+        <div *ngIf="!showPasswordForm" class="px-6 py-4 text-gray-500 text-sm">Cliquez sur "Changer le mot de passe" pour modifier vos identifiants.</div>
+        <form *ngIf="showPasswordForm" [formGroup]="passwordForm" (ngSubmit)="changePassword()" class="p-6 space-y-4">
+          <div>
+            <label class="form-label">Mot de passe actuel</label>
+            <div class="relative">
+              <input formControlName="motDePasseActuel" [type]="showPassword ? 'text' : 'password'" class="form-input pr-10">
+              <button type="button" (click)="showPassword = !showPassword" class="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500">
+                <svg *ngIf="!showPassword" class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/></svg>
+                <svg *ngIf="showPassword" class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.543-7a9.97 9.97 0 011.563-3.029m5.858.908a3 3 0 114.243 4.243M9.878 9.878l4.242 4.242M9.88 9.88l-3.29-3.29m7.532 7.532l3.29 3.29M3 3l3.59 3.59m0 0A9.953 9.953 0 0112 5c4.478 0 8.268 2.943 9.543 7a10.025 10.025 0 01-4.132 5.411m0 0L21 21"/></svg>
+              </button>
+            </div>
+          </div>
+          <div>
+            <label class="form-label">Nouveau mot de passe</label>
+            <div class="relative">
+              <input formControlName="nouveauMotDePasse" [type]="showNewPassword ? 'text' : 'password'" class="form-input pr-10" placeholder="Minimum 6 caractères">
+              <button type="button" (click)="showNewPassword = !showNewPassword" class="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500">
+                <svg *ngIf="!showNewPassword" class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/></svg>
+                <svg *ngIf="showNewPassword" class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.543-7a9.97 9.97 0 011.563-3.029m5.858.908a3 3 0 114.243 4.243M9.878 9.878l4.242 4.242M9.88 9.88l-3.29-3.29m7.532 7.532l3.29 3.29M3 3l3.59 3.59m0 0A9.953 9.953 0 0112 5c4.478 0 8.268 2.943 9.543 7a10.025 10.025 0 01-4.132 5.411m0 0L21 21"/></svg>
+              </button>
+            </div>
+          </div>
+          <button type="submit" class="btn-primary">Mettre à jour le mot de passe</button>
+        </form>
+      </div>
+    </div>
+  </main>
+</div>
