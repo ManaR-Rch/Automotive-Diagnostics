@@ -48,6 +48,13 @@ export const adminReducer = createReducer(
     ...s, loading: false, services: s.services.filter(sv => sv.id !== id)
   })),
 
+  on(AdminActions.webSocketNewAppointment, (s, { appointment }) => ({
+    ...s, appointments: [...s.appointments, appointment]
+  })),
+  on(AdminActions.webSocketUpdateAppointment, (s, { appointment }) => ({
+    ...s, appointments: s.appointments.map(a => a.id === appointment.id ? appointment : a)
+  })),
+
   on(AdminActions.loadStatsFailure, AdminActions.loadUsersFailure, AdminActions.loadAllAppointmentsFailure,
     AdminActions.loadAdminServicesFailure, AdminActions.createUserFailure, AdminActions.updateUserFailure,
     AdminActions.toggleUserFailure, AdminActions.deleteUserFailure, AdminActions.updateAppointmentStatusFailure,

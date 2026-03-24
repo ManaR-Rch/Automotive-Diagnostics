@@ -1,9 +1,15 @@
 package com.automotive.controller;
 
 import com.automotive.dto.RendezVousDTO;
+import com.automotive.dto.RdvNotificationDTO;
 import com.automotive.model.User;
+import com.automotive.model.Vehicule;
+import com.automotive.model.Service;
+import com.automotive.repository.VehiculeRepository;
+import com.automotive.repository.ServiceRepository;
 import com.automotive.service.RendezVousService;
 import com.automotive.service.UserService;
+import com.automotive.service.WebSocketNotificationService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -11,6 +17,7 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.Map;
 
@@ -24,6 +31,15 @@ public class RendezVousController {
 
     @Autowired
     private UserService userService;
+
+    @Autowired
+    private WebSocketNotificationService notificationService;
+
+    @Autowired
+    private VehiculeRepository vehiculeRepository;
+
+    @Autowired
+    private ServiceRepository serviceRepository;
 
     // ==================== ENDPOINTS CLIENT ====================
 
@@ -64,6 +80,27 @@ public class RendezVousController {
             }
             rendezVousDTO.setUserId(user.getId());
             RendezVousDTO createdRendezVous = rendezVousService.createRendezVous(rendezVousDTO);
+            
+            // Fetch additional details for notification
+            Vehicule vehicule = vehiculeRepository.findById(rendezVousDTO.getVehiculeId()).orElse(null);
+            Service service = serviceRepository.findById(rendezVousDTO.getServiceId()).orElse(null);
+            
+            // Send WebSocket notification to admins
+            RdvNotificationDTO notification = RdvNotificationDTO.builder()
+                    .id(createdRendezVous.getId())
+                    .userEmail(user.getEmail())
+                    .userName(user.getPrenom() + " " + user.getNom())
+                    .vehicule(vehicule != null ? vehicule.getMarque() + " " + vehicule.getModele() : "N/A")
+                    .service(service != null ? service.getNom() : "N/A")
+                    .dateRdv(createdRendezVous.getDateRdv() != null 
+                        ? createdRendezVous.getDateRdv().format(DateTimeFormatter.ISO_LOCAL_DATE_TIME) 
+                        : "N/A")
+                    .statut(createdRendezVous.getStatut())
+                    .message("Nouveau rendez-vous créé par " + user.getPrenom() + " " + user.getNom())
+                    .build();
+            
+            notificationService.notifyNewRendezVous(notification);
+            
             return ResponseEntity.status(HttpStatus.CREATED).body(createdRendezVous);
         } catch (IllegalArgumentException e) {
             return ResponseEntity.badRequest().body(Map.of("message", e.getMessage()));

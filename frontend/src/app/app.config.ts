@@ -30,6 +30,8 @@ import {
   createAdminServiceEffect,
   updateAdminServiceEffect,
   deleteAdminServiceEffect,
+  webSocketNewAppointmentEffect,
+  webSocketUpdateAppointmentEffect,
 } from './store/admin/admin.effects';
 
 export const appConfig: ApplicationConfig = {
@@ -74,6 +76,8 @@ export const appConfig: ApplicationConfig = {
       createAdminServiceEffect,
       updateAdminServiceEffect,
       deleteAdminServiceEffect,
+      webSocketNewAppointmentEffect,
+      webSocketUpdateAppointmentEffect,
     }),
     provideStoreDevtools({ maxAge: 25 }),
   ]

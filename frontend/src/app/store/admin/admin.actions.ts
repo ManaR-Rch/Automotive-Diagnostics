@@ -46,6 +46,9 @@ export const AdminActions = createActionGroup({
     'Delete Admin Service Success': props<{ id: number }>(),
     'Delete Admin Service Failure': props<{ error: string }>(),
 
+    'WebSocket New Appointment': props<{ appointment: Appointment }>(),
+    'WebSocket Update Appointment': props<{ appointment: Appointment }>(),
+
     'Clear Error': emptyProps(),
   }
 });

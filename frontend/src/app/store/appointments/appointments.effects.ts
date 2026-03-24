@@ -11,7 +11,11 @@ export const loadAppointmentsEffect = createEffect(
       ofType(AppointmentsActions.loadMyAppointments),
       switchMap(() => svc.getMyAppointments().pipe(
         map(appointments => AppointmentsActions.loadMyAppointmentsSuccess({ appointments })),
-        catchError(err => of(AppointmentsActions.loadMyAppointmentsFailure({ error: err.message })))
+        catchError(err => of(AppointmentsActions.loadMyAppointmentsFailure({
+          error: err.error?.message || (err.status === 403
+            ? 'Acces refuse. Veuillez vous reconnecter.'
+            : 'Impossible de charger vos rendez-vous.')
+        })))
       ))
     ),
   { functional: true }
@@ -35,7 +39,11 @@ export const cancelAppointmentEffect = createEffect(
       ofType(AppointmentsActions.cancelAppointment),
       switchMap(({ id }) => svc.cancelAppointment(id).pipe(
         map(a => AppointmentsActions.cancelAppointmentSuccess({ appointment: a })),
-        catchError(err => of(AppointmentsActions.cancelAppointmentFailure({ error: err.message })))
+        catchError(err => of(AppointmentsActions.cancelAppointmentFailure({
+          error: err.error?.message || (err.status === 403
+            ? 'Operation non autorisee. Veuillez vous reconnecter.'
+            : 'Impossible d\'annuler ce rendez-vous.')
+        })))
       ))
     ),
   { functional: true }

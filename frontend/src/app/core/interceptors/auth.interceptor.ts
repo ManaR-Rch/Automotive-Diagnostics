@@ -8,6 +8,7 @@ export const authInterceptor: HttpInterceptorFn = (req, next) => {
   const router = inject(Router);
   const isBrowser = isPlatformBrowser(inject(PLATFORM_ID));
   const token = isBrowser ? localStorage.getItem('token') : null;
+  const isAuthEndpoint = req.url.includes('/api/auth/login') || req.url.includes('/api/auth/register');
 
   console.log(`[AUTH-INTERCEPTOR] Request to ${req.url}`);
   console.log(`[AUTH-INTERCEPTOR] Token present:`, !!token);
@@ -21,7 +22,7 @@ export const authInterceptor: HttpInterceptorFn = (req, next) => {
 
   return next(authReq).pipe(
     catchError((error) => {
-      if (error.status === 401 && isBrowser) {
+      if ((error.status === 401 || error.status === 403) && isBrowser && !isAuthEndpoint) {
         localStorage.removeItem('token');
         localStorage.removeItem('user');
         router.navigate(['/auth/login']);

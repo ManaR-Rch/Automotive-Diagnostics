@@ -1,9 +1,10 @@
 import { inject } from '@angular/core';
 import { Actions, createEffect, ofType } from '@ngrx/effects';
-import { catchError, map, switchMap } from 'rxjs/operators';
+import { catchError, map, switchMap, concatMap } from 'rxjs/operators';
 import { of } from 'rxjs';
 import { AdminActions } from './admin.actions';
 import { AdminService } from '../../services/admin.service';
+import { WebSocketService } from '../../core/services/websocket.service';
 
 export const loadStatsEffect = createEffect(
   (actions$ = inject(Actions), svc = inject(AdminService)) =>
@@ -33,8 +34,8 @@ export const createUserEffect = createEffect(
   (actions$ = inject(Actions), svc = inject(AdminService)) =>
     actions$.pipe(
       ofType(AdminActions.createUser),
-      switchMap(({ user }) => svc.createUser(user).pipe(
-        map(u => AdminActions.createUserSuccess({ user: u })),
+      concatMap(({ user }) => svc.createUser(user).pipe(
+        concatMap(u => of(AdminActions.createUserSuccess({ user: u }), AdminActions.loadUsers())),
         catchError(err => of(AdminActions.createUserFailure({ error: err.error?.message || err.message })))
       ))
     ),
@@ -83,7 +84,11 @@ export const loadAllAppointmentsEffect = createEffect(
       ofType(AdminActions.loadAllAppointments),
       switchMap(() => svc.getAllAppointments().pipe(
         map(appointments => AdminActions.loadAllAppointmentsSuccess({ appointments })),
-        catchError(err => of(AdminActions.loadAllAppointmentsFailure({ error: err.message })))
+        catchError(err => of(AdminActions.loadAllAppointmentsFailure({
+          error: err.error?.message || (err.status === 403
+            ? 'Acces admin refuse. Veuillez vous reconnecter.'
+            : 'Impossible de charger les rendez-vous admin.')
+        })))
       ))
     ),
   { functional: true }
@@ -95,7 +100,11 @@ export const updateAppointmentStatusEffect = createEffect(
       ofType(AdminActions.updateAppointmentStatus),
       switchMap(({ id, statut, notes }) => svc.updateAppointmentStatus(id, statut, notes).pipe(
         map(a => AdminActions.updateAppointmentStatusSuccess({ appointment: a })),
-        catchError(err => of(AdminActions.updateAppointmentStatusFailure({ error: err.message })))
+        catchError(err => of(AdminActions.updateAppointmentStatusFailure({
+          error: err.error?.message || (err.status === 403
+            ? 'Action admin non autorisee.'
+            : 'Impossible de mettre a jour le statut du rendez-vous.')
+        })))
       ))
     ),
   { functional: true }
@@ -144,6 +153,44 @@ export const deleteAdminServiceEffect = createEffect(
       switchMap(({ id }) => svc.deleteService(id).pipe(
         map(() => AdminActions.deleteAdminServiceSuccess({ id })),
         catchError(err => of(AdminActions.deleteAdminServiceFailure({ error: err.message })))
+      ))
+    ),
+  { functional: true }
+);
+
+export const webSocketNewAppointmentEffect = createEffect(
+  (actions$ = inject(Actions), ws = inject(WebSocketService)) =>
+    actions$.pipe(
+      ofType(AdminActions.loadAllAppointments),
+      switchMap(() => ws.newRdv$.pipe(
+        map(notification => AdminActions.webSocketNewAppointment({
+          appointment: {
+            id: notification.id,
+            statut: notification.statut,
+            dateRdv: notification.dateRdv,
+            usuarioEmail: notification.userEmail,
+            usuarioNom: notification.userName,
+          } as any
+        })),
+        catchError(err => { console.error('WebSocket error:', err); return of(); })
+      ))
+    ),
+  { functional: true }
+);
+
+export const webSocketUpdateAppointmentEffect = createEffect(
+  (actions$ = inject(Actions), ws = inject(WebSocketService)) =>
+    actions$.pipe(
+      ofType(AdminActions.loadAllAppointments),
+      switchMap(() => ws.updateRdv$.pipe(
+        map(notification => AdminActions.webSocketUpdateAppointment({
+          appointment: {
+            id: notification.id,
+            statut: notification.statut,
+            dateRdv: notification.dateRdv,
+          } as any
+        })),
+        catchError(err => { console.error('WebSocket error:', err); return of(); })
       ))
     ),
   { functional: true }
