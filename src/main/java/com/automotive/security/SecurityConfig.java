@@ -41,6 +41,7 @@ public class SecurityConfig {
         .authorizeHttpRequests(auth -> auth
             // Endpoints publics
             .requestMatchers("/api/auth/**").permitAll()
+          .requestMatchers("/ws/**").permitAll()
             .requestMatchers("/h2-console/**").permitAll()
             .requestMatchers(HttpMethod.GET, "/api/services").permitAll()
 
