@@ -2,9 +2,12 @@ import { inject } from '@angular/core';
 import { Actions, createEffect, ofType } from '@ngrx/effects';
 import { catchError, map, switchMap, concatMap } from 'rxjs/operators';
 import { of } from 'rxjs';
+import { Store } from '@ngrx/store';
+import { filter, withLatestFrom } from 'rxjs/operators';
 import { AdminActions } from './admin.actions';
 import { AdminService } from '../../services/admin.service';
 import { WebSocketService } from '../../core/services/websocket.service';
+import { selectIsAdmin } from '../auth/auth.selectors';
 
 export const loadStatsEffect = createEffect(
   (actions$ = inject(Actions), svc = inject(AdminService)) =>
@@ -128,7 +131,11 @@ export const createAdminServiceEffect = createEffect(
       ofType(AdminActions.createAdminService),
       switchMap(({ service }) => svc.createService(service).pipe(
         map(s => AdminActions.createAdminServiceSuccess({ service: s })),
-        catchError(err => of(AdminActions.createAdminServiceFailure({ error: err.message })))
+        catchError(err => of(AdminActions.createAdminServiceFailure({
+          error: err.error?.message || (err.status === 400
+            ? 'Donnees service invalides. Verifiez les champs (notamment categorie).'
+            : 'Impossible de creer le service.')
+        })))
       ))
     ),
   { functional: true }
@@ -140,7 +147,11 @@ export const updateAdminServiceEffect = createEffect(
       ofType(AdminActions.updateAdminService),
       switchMap(({ id, service }) => svc.updateService(id, service).pipe(
         map(s => AdminActions.updateAdminServiceSuccess({ service: s })),
-        catchError(err => of(AdminActions.updateAdminServiceFailure({ error: err.message })))
+        catchError(err => of(AdminActions.updateAdminServiceFailure({
+          error: err.error?.message || (err.status === 400
+            ? 'Donnees service invalides. Verifiez les champs (notamment categorie).'
+            : 'Impossible de mettre a jour le service.')
+        })))
       ))
     ),
   { functional: true }
@@ -152,46 +163,46 @@ export const deleteAdminServiceEffect = createEffect(
       ofType(AdminActions.deleteAdminService),
       switchMap(({ id }) => svc.deleteService(id).pipe(
         map(() => AdminActions.deleteAdminServiceSuccess({ id })),
-        catchError(err => of(AdminActions.deleteAdminServiceFailure({ error: err.message })))
+        catchError(err => of(AdminActions.deleteAdminServiceFailure({
+          error: err.error?.message || 'Impossible de supprimer le service.'
+        })))
       ))
     ),
   { functional: true }
 );
 
 export const webSocketNewAppointmentEffect = createEffect(
-  (actions$ = inject(Actions), ws = inject(WebSocketService)) =>
-    actions$.pipe(
-      ofType(AdminActions.loadAllAppointments),
-      switchMap(() => ws.newRdv$.pipe(
-        map(notification => AdminActions.webSocketNewAppointment({
-          appointment: {
-            id: notification.id,
-            statut: notification.statut,
-            dateRdv: notification.dateRdv,
-            usuarioEmail: notification.userEmail,
-            usuarioNom: notification.userName,
-          } as any
-        })),
-        catchError(err => { console.error('WebSocket error:', err); return of(); })
-      ))
+  (ws = inject(WebSocketService), store = inject(Store)) =>
+    ws.newRdv$.pipe(
+      withLatestFrom(store.select(selectIsAdmin)),
+      filter(([, isAdmin]) => isAdmin),
+      map(([notification]) => AdminActions.webSocketNewAppointment({
+        appointment: {
+          id: notification.id,
+          statut: notification.statut,
+          dateRdv: notification.dateRdv,
+          usuarioEmail: (notification as any).userEmail,
+          usuarioNom: (notification as any).userName,
+        } as any
+      })),
+      catchError(err => { console.error('WebSocket error:', err); return of(); })
     ),
   { functional: true }
 );
 
 export const webSocketUpdateAppointmentEffect = createEffect(
-  (actions$ = inject(Actions), ws = inject(WebSocketService)) =>
-    actions$.pipe(
-      ofType(AdminActions.loadAllAppointments),
-      switchMap(() => ws.updateRdv$.pipe(
-        map(notification => AdminActions.webSocketUpdateAppointment({
-          appointment: {
-            id: notification.id,
-            statut: notification.statut,
-            dateRdv: notification.dateRdv,
-          } as any
-        })),
-        catchError(err => { console.error('WebSocket error:', err); return of(); })
-      ))
+  (ws = inject(WebSocketService), store = inject(Store)) =>
+    ws.updateRdv$.pipe(
+      withLatestFrom(store.select(selectIsAdmin)),
+      filter(([, isAdmin]) => isAdmin),
+      map(([notification]) => AdminActions.webSocketUpdateAppointment({
+        appointment: {
+          id: notification.id,
+          statut: notification.statut,
+          dateRdv: notification.dateRdv,
+        } as any
+      })),
+      catchError(err => { console.error('WebSocket error:', err); return of(); })
     ),
   { functional: true }
 );

@@ -22,6 +22,7 @@ export class AdminServicesComponent implements OnInit {
   editId: number | null = null;
 
   form: FormGroup;
+  serviceCategories = ['MAINTENANCE', 'REPARATION', 'DIAGNOSTIC', 'CONTROLE_TECHNIQUE', 'AUTRE'];
 
   constructor(private store: Store, private fb: FormBuilder) {
     this.services$ = this.store.select(selectAdminServices);
@@ -30,7 +31,7 @@ export class AdminServicesComponent implements OnInit {
     this.form = this.fb.group({
       nom: ['', Validators.required],
       description: ['', Validators.required],
-      categorie: ['', Validators.required],
+      categorie: [this.serviceCategories[0], Validators.required],
       dureeEstimee: [60, Validators.required],
       prixMin: [0, Validators.required],
       prixMax: [0, Validators.required],
@@ -46,7 +47,16 @@ export class AdminServicesComponent implements OnInit {
   openCreate(): void {
     this.editId = null;
     this.showForm = true;
-    this.form.reset({ dureeEstimee: 60, prixMin: 0, prixMax: 0, actif: true, ordreAffichage: 0 } as any);
+    this.form.patchValue({
+      nom: '',
+      description: '',
+      categorie: this.serviceCategories[0],
+      dureeEstimee: 60,
+      prixMin: 0,
+      prixMax: 0,
+      actif: true,
+      ordreAffichage: 0
+    });
   }
 
   openEdit(service: Service): void {
@@ -57,7 +67,18 @@ export class AdminServicesComponent implements OnInit {
 
   save(): void {
     if (this.form.invalid) { this.form.markAllAsTouched(); return; }
-    const payload = this.form.value as Service;
+    const formValue = this.form.value;
+    const payload: Service = {
+      id: formValue.id,
+      nom: formValue.nom?.trim() || '',
+      description: formValue.description?.trim() || '',
+      categorie: (formValue.categorie || this.serviceCategories[0]).trim(),
+      dureeEstimee: Number(formValue.dureeEstimee) || 0,
+      prixMin: Number(formValue.prixMin) || 0,
+      prixMax: Number(formValue.prixMax) || 0,
+      actif: Boolean(formValue.actif),
+      ordreAffichage: Number(formValue.ordreAffichage) || 0
+    };
     if (this.editId) this.store.dispatch(AdminActions.updateAdminService({ id: this.editId, service: payload }));
     else this.store.dispatch(AdminActions.createAdminService({ service: payload }));
     this.showForm = false;

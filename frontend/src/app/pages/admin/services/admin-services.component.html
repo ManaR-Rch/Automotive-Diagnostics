@@ -9,7 +9,9 @@
     <div *ngIf="showForm" class="card mb-6">
       <form [formGroup]="form" (ngSubmit)="save()" class="grid grid-cols-1 md:grid-cols-2 gap-3">
         <input formControlName="nom" class="form-input" placeholder="Nom">
-        <input formControlName="categorie" class="form-input" placeholder="Catégorie">
+        <select formControlName="categorie" class="form-input">
+          <option *ngFor="let c of serviceCategories" [value]="c">{{ c }}</option>
+        </select>
         <input formControlName="dureeEstimee" type="number" class="form-input" placeholder="Durée (min)">
         <input formControlName="ordreAffichage" type="number" class="form-input" placeholder="Ordre affichage">
         <input formControlName="prixMin" type="number" class="form-input" placeholder="Prix min">
