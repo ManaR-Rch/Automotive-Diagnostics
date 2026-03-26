@@ -27,7 +27,7 @@ export class VehiclesComponent implements OnInit {
 
   form: FormGroup;
 
-  carburantOptions = ['ESSENCE', 'DIESEL', 'HYBRIDE', 'ELECTRIQUE', 'GPL'];
+  carburantOptions = ['ESSENCE', 'DIESEL', 'HYBRIDE', 'ELECTRIQUE'];
 
   constructor(private store: Store, private fb: FormBuilder) {
     this.vehicles$ = this.store.select(selectAllVehicles);

@@ -1,6 +1,7 @@
 import { Injectable } from '@angular/core';
 import { Subject } from 'rxjs';
 import { Client, IMessage } from '@stomp/stompjs';
+import SockJS from 'sockjs-client';
 
 @Injectable({ providedIn: 'root' })
 export class WebSocketService {
@@ -26,17 +27,18 @@ export class WebSocketService {
 
   connect(): void {
     if (typeof window === 'undefined') return; // SSR guard
+    if (this.stompClient?.active || this.stompClient?.connected) return;
     
     try {
-      const protocol = window.location.protocol === 'https:' ? 'wss' : 'ws';
-      const url = `${protocol}://${window.location.hostname}:${window.location.port}/ws/rendezvous`;
+      const url = '/ws/rendezvous';
       
       this.stompClient = new Client({
-        brokerURL: url,
         connectHeaders: {},
         reconnectDelay: 5000,
+        webSocketFactory: () => new SockJS(url),
         onConnect: () => this.onConnect(),
-        onStompError: (frame) => this.onError(frame)
+        onStompError: (frame) => this.onError(frame),
+        onWebSocketError: (event) => this.onError(event)
       });
 
       this.stompClient.activate();
@@ -86,7 +88,7 @@ export class WebSocketService {
   }
 
   disconnect(): void {
-    if (this.stompClient && this.stompClient.connected) {
+    if (this.stompClient && (this.stompClient.connected || this.stompClient.active)) {
       this.stompClient.deactivate().then(() => {
         console.log('WebSocket disconnected');
       });
