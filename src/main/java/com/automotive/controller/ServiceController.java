@@ -9,6 +9,7 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/api/services")
@@ -98,8 +99,19 @@ public class ServiceController {
      */
     @DeleteMapping("/{id}")
     @PreAuthorize("hasRole('ADMIN')")
-    public ResponseEntity<Void> deleteService(@PathVariable Long id) {
-        return serviceService.deleteService(id) ? ResponseEntity.noContent().build()
-                : ResponseEntity.notFound().build();
+    public ResponseEntity<?> deleteService(@PathVariable Long id) {
+        ServiceService.DeleteResult result = serviceService.deleteService(id);
+
+        if (result == ServiceService.DeleteResult.NOT_FOUND) {
+            return ResponseEntity.notFound().build();
+        }
+
+        if (result == ServiceService.DeleteResult.DEACTIVATED) {
+            return ResponseEntity.ok(Map.of(
+                    "message", "Service lie a des rendez-vous: desactive au lieu d'etre supprime",
+                    "mode", "DEACTIVATED"));
+        }
+
+        return ResponseEntity.noContent().build();
     }
 }

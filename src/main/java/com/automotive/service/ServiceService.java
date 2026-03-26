@@ -2,6 +2,7 @@ package com.automotive.service;
 
 import com.automotive.dto.ServiceDTO;
 import com.automotive.model.Service;
+import com.automotive.repository.RendezVousRepository;
 import com.automotive.repository.ServiceRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import java.util.List;
@@ -10,8 +11,17 @@ import java.util.stream.Collectors;
 @org.springframework.stereotype.Service
 public class ServiceService {
 
+    public enum DeleteResult {
+        DELETED,
+        DEACTIVATED,
+        NOT_FOUND
+    }
+
     @Autowired
     private ServiceRepository serviceRepository;
+
+    @Autowired
+    private RendezVousRepository rendezVousRepository;
 
     public ServiceDTO getServiceById(Long id) {
         return serviceRepository.findById(id)
@@ -52,7 +62,10 @@ public class ServiceService {
                 .map(service -> {
                     service.setNom(serviceDTO.getNom());
                     service.setDescription(serviceDTO.getDescription());
-                    service.setCategorie(Service.Categorie.valueOf(serviceDTO.getCategorie()));
+                    String categorie = serviceDTO.getCategorie();
+                    if (categorie != null && !categorie.isBlank()) {
+                        service.setCategorie(Service.Categorie.valueOf(categorie.trim().toUpperCase()));
+                    }
                     service.setDureeEstimee(serviceDTO.getDureeEstimee());
                     service.setPrixMin(serviceDTO.getPrixMin());
                     service.setPrixMax(serviceDTO.getPrixMax());
@@ -71,12 +84,19 @@ public class ServiceService {
                 .orElse(null);
     }
 
-    public boolean deleteService(Long id) {
-        if (serviceRepository.existsById(id)) {
-            serviceRepository.deleteById(id);
-            return true;
-        }
-        return false;
+    public DeleteResult deleteService(Long id) {
+        return serviceRepository.findById(id)
+                .map(service -> {
+                    if (rendezVousRepository.existsByService_Id(id)) {
+                        service.setActif(false);
+                        serviceRepository.save(service);
+                        return DeleteResult.DEACTIVATED;
+                    }
+
+                    serviceRepository.deleteById(id);
+                    return DeleteResult.DELETED;
+                })
+                .orElse(DeleteResult.NOT_FOUND);
     }
 
     public long countServices() {
@@ -102,10 +122,15 @@ public class ServiceService {
     }
 
     private Service convertToEntity(ServiceDTO serviceDTO) {
+        String categorie = serviceDTO.getCategorie();
+        if (categorie == null) {
+            throw new IllegalArgumentException("Categorie ne peut pas etre null");
+        }
+        
         return Service.builder()
                 .nom(serviceDTO.getNom())
                 .description(serviceDTO.getDescription())
-                .categorie(Service.Categorie.valueOf(serviceDTO.getCategorie()))
+                .categorie(Service.Categorie.valueOf(categorie.trim().toUpperCase()))
                 .dureeEstimee(serviceDTO.getDureeEstimee())
                 .prixMin(serviceDTO.getPrixMin())
                 .prixMax(serviceDTO.getPrixMax())

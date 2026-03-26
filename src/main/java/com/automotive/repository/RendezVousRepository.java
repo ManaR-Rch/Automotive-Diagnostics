@@ -14,6 +14,8 @@ import java.util.List;
 public interface RendezVousRepository extends JpaRepository<RendezVous, Long> {
     List<RendezVous> findByUser(User user);
 
+    boolean existsByService_Id(Long serviceId);
+
     List<RendezVous> findByStatut(RendezVous.Statut statut);
 
     long countByStatut(RendezVous.Statut statut);
