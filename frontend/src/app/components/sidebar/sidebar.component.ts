@@ -6,6 +6,7 @@ import { selectIsAdmin } from '../../store/auth/auth.selectors';
 import { combineLatest, Observable, Subject, takeUntil } from 'rxjs';
 import { Appointment } from '../../core/models/appointment.model';
 import { AdminActions } from '../../store/admin/admin.actions';
+import { AuthActions } from '../../store/auth/auth.actions';
 import { selectAdminAppointments, selectAdminLoading } from '../../store/admin/admin.selectors';
 
 @Component({
@@ -75,6 +76,10 @@ export class SidebarComponent implements OnInit, OnDestroy {
   goToAdminAppointments(): void {
     this.clearNotifications();
     this.router.navigate(['/admin/appointments']);
+  }
+
+  logout(): void {
+    this.store.dispatch(AuthActions.logout());
   }
 
   private handleRealtimeAppointments(appointments: Appointment[], loading: boolean): void {
