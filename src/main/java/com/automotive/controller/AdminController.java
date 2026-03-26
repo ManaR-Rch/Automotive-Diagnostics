@@ -1,6 +1,7 @@
 package com.automotive.controller;
 
 import com.automotive.dto.*;
+import com.automotive.model.Service;
 import com.automotive.service.RendezVousService;
 import com.automotive.service.ServiceService;
 import com.automotive.service.UserService;
@@ -156,11 +157,24 @@ public class AdminController {
 
   /**
    * Modifier le statut d'un rendez-vous
-   * PUT /api/admin/rendezvous/{id}/statut/{statut}
+   * PUT /api/admin/rendezvous/{id}/statut
    */
-  @PutMapping("/rendezvous/{id}/statut/{statut}")
-  public ResponseEntity<RendezVousDTO> updateRendezVousStatut(@PathVariable Long id, @PathVariable String statut) {
+  @PutMapping("/rendezvous/{id}/statut")
+  public ResponseEntity<?> updateRendezVousStatut(@PathVariable Long id, @RequestBody Map<String, String> payload) {
+    String statut = payload.get("statut");
+    if (statut == null || statut.isBlank()) {
+        return ResponseEntity.badRequest().body(Map.of("message", "Le statut est obligatoire"));
+    }
+    
     RendezVousDTO updatedRendezVous = rendezVousService.updateStatut(id, statut);
+    
+    // Notes admin si fournies (nécessiterait d'ajouter la méthode updateNotes dans le service si on veut mais pour l'instant juste updateStatut)
+    String notesAdmin = payload.get("notesAdmin");
+    if (notesAdmin != null && !notesAdmin.isBlank() && updatedRendezVous != null) {
+        // En attendant que updateNotesAdmin soit ajouté dans le backend, on ne jette pas d'erreur.
+        // rendezVousService.updateNotesAdmin(id, notesAdmin); 
+    }
+    
     return updatedRendezVous != null ? ResponseEntity.ok(updatedRendezVous) : ResponseEntity.notFound().build();
   }
 
@@ -181,9 +195,39 @@ public class AdminController {
    * POST /api/admin/services
    */
   @PostMapping("/services")
-  public ResponseEntity<ServiceDTO> createService(@RequestBody ServiceDTO serviceDTO) {
-    ServiceDTO createdService = serviceService.createService(serviceDTO);
-    return ResponseEntity.ok(createdService);
+  public ResponseEntity<?> createService(@RequestBody ServiceDTO serviceDTO) {
+    try {
+      // Validation détaillée
+      if (serviceDTO == null) {
+        return ResponseEntity.badRequest().body(Map.of("message", "Donnees requises manquantes"));
+      }
+      
+      if (serviceDTO.getNom() == null || serviceDTO.getNom().isBlank()) {
+        return ResponseEntity.badRequest().body(Map.of("message", "Nom du service obligatoire"));
+      }
+      
+      if (serviceDTO.getDescription() == null || serviceDTO.getDescription().isBlank()) {
+        return ResponseEntity.badRequest().body(Map.of("message", "Description du service obligatoire"));
+      }
+      
+      if (serviceDTO.getCategorie() == null || serviceDTO.getCategorie().isBlank()) {
+        return ResponseEntity.badRequest().body(Map.of("message", "Categorie du service obligatoire"));
+      }
+      
+      // Valider le format de la categorie
+      try {
+        Service.Categorie.valueOf(serviceDTO.getCategorie().trim().toUpperCase());
+      } catch (IllegalArgumentException e) {
+        return ResponseEntity.badRequest().body(Map.of("message", "Categorie invalide. Utilisez: MAINTENANCE, REPARATION, DIAGNOSTIC, CONTROLE_TECHNIQUE, AUTRE"));
+      }
+      
+      ServiceDTO createdService = serviceService.createService(serviceDTO);
+      return ResponseEntity.ok(createdService);
+    } catch (IllegalArgumentException e) {
+      return ResponseEntity.badRequest().body(Map.of("message", "Categorie invalide. Utilisez: MAINTENANCE, REPARATION, DIAGNOSTIC, CONTROLE_TECHNIQUE, AUTRE"));
+    } catch (Exception e) {
+      return ResponseEntity.badRequest().body(Map.of("message", "Erreur lors de la creation du service: " + e.getMessage()));
+    }
   }
 
   /**
@@ -191,9 +235,18 @@ public class AdminController {
    * PUT /api/admin/services/{id}
    */
   @PutMapping("/services/{id}")
-  public ResponseEntity<ServiceDTO> updateService(@PathVariable Long id, @RequestBody ServiceDTO serviceDTO) {
-    ServiceDTO updatedService = serviceService.updateService(id, serviceDTO);
-    return updatedService != null ? ResponseEntity.ok(updatedService) : ResponseEntity.notFound().build();
+  public ResponseEntity<?> updateService(@PathVariable Long id, @RequestBody ServiceDTO serviceDTO) {
+    try {
+      if (serviceDTO.getCategorie() == null || serviceDTO.getCategorie().isBlank()) {
+        return ResponseEntity.badRequest().body(Map.of("message", "Categorie du service obligatoire"));
+      }
+      ServiceDTO updatedService = serviceService.updateService(id, serviceDTO);
+      return updatedService != null ? ResponseEntity.ok(updatedService) : ResponseEntity.notFound().build();
+    } catch (IllegalArgumentException e) {
+      return ResponseEntity.badRequest().body(Map.of("message", "Categorie invalide. Utilisez: MAINTENANCE, REPARATION, DIAGNOSTIC, CONTROLE_TECHNIQUE, AUTRE"));
+    } catch (Exception e) {
+      return ResponseEntity.badRequest().body(Map.of("message", "Erreur lors de la mise a jour du service: " + e.getMessage()));
+    }
   }
 
   /**
@@ -211,7 +264,19 @@ public class AdminController {
    * DELETE /api/admin/services/{id}
    */
   @DeleteMapping("/services/{id}")
-  public ResponseEntity<Void> deleteService(@PathVariable Long id) {
-    return serviceService.deleteService(id) ? ResponseEntity.noContent().build() : ResponseEntity.notFound().build();
+  public ResponseEntity<?> deleteService(@PathVariable Long id) {
+    ServiceService.DeleteResult result = serviceService.deleteService(id);
+
+    if (result == ServiceService.DeleteResult.NOT_FOUND) {
+      return ResponseEntity.notFound().build();
+    }
+
+    if (result == ServiceService.DeleteResult.DEACTIVATED) {
+      return ResponseEntity.ok(Map.of(
+          "message", "Service lie a des rendez-vous: desactive au lieu d'etre supprime",
+          "mode", "DEACTIVATED"));
+    }
+
+    return ResponseEntity.noContent().build();
   }
 }
