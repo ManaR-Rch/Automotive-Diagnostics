@@ -1,87 +1,92 @@
 <div class="flex min-h-screen bg-dark-900">
   <app-sidebar></app-sidebar>
   <main class="flex-1 overflow-auto p-6 lg:p-8">
-    <h1 class="text-2xl font-bold text-white mb-8">Administration • Dashboard</h1>
-
-    <div *ngIf="loading$ | async" class="flex justify-center py-16">
-      <svg class="animate-spin w-10 h-10 text-primary-500" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"></path></svg>
+    <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-8">
+      <div>
+        <h1 class="text-3xl font-bold text-white tracking-tight">Vue d'ensemble</h1>
+        <p class="text-gray-400 mt-1">Gérez facilement vos statistiques globales.</p>
+      </div>
+      <div class="flex gap-3">
+        <a routerLink="/admin/users" class="btn-primary py-2 px-4 text-sm flex items-center gap-2">
+          <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z" /></svg>
+          Gestion Utilisateurs
+        </a>
+        <a routerLink="/admin/appointments" class="btn-secondary bg-dark-700 hover:bg-dark-600 text-white py-2 px-4 rounded-lg text-sm flex items-center gap-2 transition-colors border border-dark-600 hover:border-dark-500">
+          <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" /></svg>
+          Tous les RDV
+        </a>
+      </div>
     </div>
 
-    <div *ngIf="stats$ | async as s" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5 mb-8">
-      <div class="card"><p class="text-gray-500 text-xs uppercase">Total Utilisateurs</p><p class="text-white text-3xl font-black mt-2">{{ s.totalUsers }}</p></div>
-      <div class="card"><p class="text-gray-500 text-xs uppercase">Clients</p><p class="text-white text-3xl font-black mt-2">{{ s.totalClients }}</p></div>
-      <div class="card"><p class="text-gray-500 text-xs uppercase">Services</p><p class="text-white text-3xl font-black mt-2">{{ s.totalServices }}</p></div>
-      <div class="card"><p class="text-gray-500 text-xs uppercase">RDV Total</p><p class="text-white text-3xl font-black mt-2">{{ s.totalRendezVous }}</p></div>
-      <div class="card"><p class="text-gray-500 text-xs uppercase">Confirmé</p><p class="text-green-400 text-3xl font-black mt-2">{{ s.rdvConfirmes }}</p></div>
-      <div class="card"><p class="text-gray-500 text-xs uppercase">En Cours</p><p class="text-yellow-400 text-3xl font-black mt-2">{{ s.rdvEnCours }}</p></div>
-      <div class="card"><p class="text-gray-500 text-xs uppercase">Terminés</p><p class="text-blue-400 text-3xl font-black mt-2">{{ s.rdvTermines }}</p></div>
-      <div class="card"><p class="text-gray-500 text-xs uppercase">Annulés</p><p class="text-red-400 text-3xl font-black mt-2">{{ s.rdvAnnules }}</p></div>
+    <div *ngIf="loading$ | async" class="flex justify-center py-20">
+      <div class="flex flex-col items-center">
+        <svg class="animate-spin w-12 h-12 text-primary-500 mb-4" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"></path></svg>
+        <span class="text-gray-400 font-medium">Chargement des données...</span>
+      </div>
     </div>
 
-    <!-- Utilisateurs -->
-    <section class="mb-12">
-      <h2 class="text-xl font-bold text-white mb-4">Gestion des utilisateurs</h2>
-      <div class="overflow-x-auto rounded-lg bg-dark-800">
-        <table class="min-w-full text-sm">
-          <thead class="bg-dark-700 text-gray-400">
-            <tr>
-              <th class="px-4 py-2">Nom</th>
-              <th class="px-4 py-2">Prénom</th>
-              <th class="px-4 py-2">Email</th>
-              <th class="px-4 py-2">Téléphone</th>
-              <th class="px-4 py-2">Rôle</th>
-              <th class="px-4 py-2">Actif</th>
-              <th class="px-4 py-2">Actions</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr *ngFor="let u of users$ | async" class="border-b border-dark-700">
-              <td class="px-4 py-2 text-white">{{ u.nom }}</td>
-              <td class="px-4 py-2 text-white">{{ u.prenom }}</td>
-              <td class="px-4 py-2 text-primary-400">{{ u.email }}</td>
-              <td class="px-4 py-2 text-white">{{ u.telephone || '-' }}</td>
-              <td class="px-4 py-2 text-white">{{ u.role }}</td>
-              <td class="px-4 py-2">
-                <span [ngClass]="u.actif ? 'text-green-400' : 'text-red-400'">{{ u.actif ? 'Oui' : 'Non' }}</span>
-              </td>
-              <td class="px-4 py-2">
-                <!-- Actions: activer/désactiver, supprimer -->
-                <button class="btn btn-xs btn-primary mr-2">Activer/Désactiver</button>
-                <button class="btn btn-xs btn-danger">Supprimer</button>
-              </td>
-            </tr>
-          </tbody>
-        </table>
+    <div *ngIf="stats$ | async as s" class="space-y-8">
+      
+      <!-- Global Stats -->
+      <div>
+        <h2 class="text-lg font-semibold text-white mb-4 flex items-center gap-2">
+          <svg class="w-5 h-5 text-primary-500" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" /></svg>
+          Statistiques Globales
+        </h2>
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
+          <div class="card flex items-center justify-between p-6">
+            <div><p class="text-gray-400 text-sm font-medium">Total Utilisateurs</p><p class="text-white text-3xl font-bold mt-1">{{ s.totalUsers }}</p></div>
+            <div class="w-12 h-12 rounded-xl bg-primary-900/40 flex items-center justify-center text-primary-500"><svg class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z" /></svg></div>
+          </div>
+          <div class="card flex items-center justify-between p-6">
+            <div><p class="text-gray-400 text-sm font-medium">Total Clients</p><p class="text-white text-3xl font-bold mt-1">{{ s.totalClients }}</p></div>
+            <div class="w-12 h-12 rounded-xl bg-blue-900/40 flex items-center justify-center text-blue-500"><svg class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" /></svg></div>
+          </div>
+          <div class="card flex items-center justify-between p-6">
+            <div><p class="text-gray-400 text-sm font-medium">Services Actifs</p><p class="text-white text-3xl font-bold mt-1">{{ s.totalServices }}</p></div>
+            <div class="w-12 h-12 rounded-xl bg-purple-900/40 flex items-center justify-center text-purple-500"><svg class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/></svg></div>
+          </div>
+          <div class="card flex items-center justify-between p-6">
+            <div><p class="text-gray-400 text-sm font-medium">Total RDV</p><p class="text-white text-3xl font-bold mt-1">{{ s.totalRendezVous }}</p></div>
+            <div class="w-12 h-12 rounded-xl bg-green-900/40 flex items-center justify-center text-green-500"><svg class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" /></svg></div>
+          </div>
+        </div>
       </div>
-    </section>
 
-    <!-- Rendez-vous -->
-    <section>
-      <h2 class="text-xl font-bold text-white mb-4">Tous les rendez-vous</h2>
-      <div class="overflow-x-auto rounded-lg bg-dark-800">
-        <table class="min-w-full text-sm">
-          <thead class="bg-dark-700 text-gray-400">
-            <tr>
-              <th class="px-4 py-2">Date</th>
-              <th class="px-4 py-2">Service</th>
-              <th class="px-4 py-2">Nom</th>
-              <th class="px-4 py-2">Téléphone</th>
-              <th class="px-4 py-2">Statut</th>
-              <th class="px-4 py-2">Notes</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr *ngFor="let rdv of appointments$ | async" class="border-b border-dark-700">
-              <td class="px-4 py-2 text-white">{{ rdv.dateRdv | date:'short' }}</td>
-              <td class="px-4 py-2 text-white">{{ rdv.serviceId }}</td>
-              <td class="px-4 py-2 text-white">{{ getUserName(rdv.userId) }}</td>
-              <td class="px-4 py-2 text-white">{{ getUserPhone(rdv.userId) }}</td>
-              <td class="px-4 py-2 text-white">{{ rdv.statut }}</td>
-              <td class="px-4 py-2 text-white">{{ rdv.notesAdmin || '-' }}</td>
-            </tr>
-          </tbody>
-        </table>
+      <!-- RDV Status -->
+      <div class="pt-4">
+        <h2 class="text-lg font-semibold text-white mb-4 flex items-center gap-2">
+          <svg class="w-5 h-5 text-primary-500" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" /></svg>
+          Répartition des Rendez-vous
+        </h2>
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
+          <div class="card bg-dark-800/80 border-l-4 border-l-green-500 p-6">
+            <p class="text-gray-400 text-sm font-medium">Confirmés</p>
+            <div class="flex items-end mt-2 gap-2">
+              <p class="text-green-500 text-3xl font-bold">{{ s.rdvConfirmes }}</p>
+            </div>
+          </div>
+          <div class="card bg-dark-800/80 border-l-4 border-l-yellow-500 p-6">
+            <p class="text-gray-400 text-sm font-medium">En Cours</p>
+            <div class="flex items-end mt-2 gap-2">
+              <p class="text-yellow-500 text-3xl font-bold">{{ s.rdvEnCours }}</p>
+            </div>
+          </div>
+          <div class="card bg-dark-800/80 border-l-4 border-l-blue-500 p-6">
+            <p class="text-gray-400 text-sm font-medium">Terminés</p>
+            <div class="flex items-end mt-2 gap-2">
+              <p class="text-blue-500 text-3xl font-bold">{{ s.rdvTermines }}</p>
+            </div>
+          </div>
+          <div class="card bg-dark-800/80 border-l-4 border-l-red-500 p-6">
+            <p class="text-gray-400 text-sm font-medium">Annulés</p>
+            <div class="flex items-end mt-2 gap-2">
+              <p class="text-red-500 text-3xl font-bold">{{ s.rdvAnnules }}</p>
+            </div>
+          </div>
+        </div>
       </div>
-    </section>
+
+    </div>
   </main>
 </div>
