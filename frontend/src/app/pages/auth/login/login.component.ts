@@ -5,7 +5,7 @@ import { RouterModule, Router } from '@angular/router';
 import { Store } from '@ngrx/store';
 import { Observable, Subject, takeUntil } from 'rxjs';
 import { AuthActions } from '../../../store/auth/auth.actions';
-import { selectAuthLoading, selectAuthError, selectIsAuthenticated } from '../../../store/auth/auth.selectors';
+import { selectAuthLoading, selectAuthError, selectCurrentUser } from '../../../store/auth/auth.selectors';
 
 @Component({
   selector: 'app-login',
@@ -30,8 +30,14 @@ export class LoginComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit() {
-    this.store.select(selectIsAuthenticated).pipe(takeUntil(this.destroy$)).subscribe(auth => {
-      if (auth) this.router.navigate(['/dashboard']);
+    this.store.select(selectCurrentUser).pipe(takeUntil(this.destroy$)).subscribe(user => {
+      if (user) {
+        if (user.role === 'ADMIN') {
+          this.router.navigate(['/admin/dashboard']);
+        } else {
+          this.router.navigate(['/dashboard']);
+        }
+      }
     });
   }
 

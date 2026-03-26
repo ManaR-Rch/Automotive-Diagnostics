@@ -3,7 +3,7 @@
     <div class="flex items-center justify-between h-16">
 
       <!-- Logo -->
-      <a routerLink="/" class="flex items-center gap-3 group">
+      <a [routerLink]="(isAdmin$ | async) ? '/admin/dashboard' : '/'" class="flex items-center gap-3 group">
         <div class="w-9 h-9 bg-primary-600 rounded-lg flex items-center justify-center group-hover:bg-primary-500 transition-colors">
           <svg class="w-5 h-5 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/>
@@ -14,15 +14,17 @@
 
       <!-- Desktop Nav -->
       <div class="hidden md:flex items-center gap-1">
-        <a routerLink="/" routerLinkActive="nav-link-active" [routerLinkActiveOptions]="{exact:true}" class="nav-link">Accueil</a>
-        <a routerLink="/services" routerLinkActive="nav-link-active" class="nav-link">Services</a>
-        <ng-container *ngIf="isAuthenticated$ | async">
-          <a routerLink="/dashboard" routerLinkActive="nav-link-active" class="nav-link">Dashboard</a>
-          <a routerLink="/vehicles" routerLinkActive="nav-link-active" class="nav-link">Véhicules</a>
-          <a routerLink="/appointments" routerLinkActive="nav-link-active" class="nav-link">Rendez-vous</a>
-          <ng-container *ngIf="isAdmin$ | async">
-            <a routerLink="/admin/dashboard" routerLinkActive="nav-link-active" class="nav-link text-primary-400">Admin</a>
+        <ng-container *ngIf="!(isAdmin$ | async)">
+          <a routerLink="/" routerLinkActive="nav-link-active" [routerLinkActiveOptions]="{exact:true}" class="nav-link">Accueil</a>
+          <a routerLink="/services" routerLinkActive="nav-link-active" class="nav-link">Services</a>
+          <ng-container *ngIf="isAuthenticated$ | async">
+            <a routerLink="/dashboard" routerLinkActive="nav-link-active" class="nav-link">Dashboard</a>
+            <a routerLink="/vehicles" routerLinkActive="nav-link-active" class="nav-link">Véhicules</a>
+            <a routerLink="/appointments" routerLinkActive="nav-link-active" class="nav-link">Rendez-vous</a>
           </ng-container>
+        </ng-container>
+        <ng-container *ngIf="isAdmin$ | async">
+          <a routerLink="/admin/dashboard" routerLinkActive="nav-link-active" class="nav-link text-primary-400">Dashboard Admin</a>
         </ng-container>
       </div>
 
@@ -69,15 +71,19 @@
     <!-- Mobile menu -->
     <div *ngIf="mobileOpen" class="md:hidden pb-4 border-t border-dark-600 mt-2 pt-3">
       <div class="flex flex-col gap-1">
-        <a routerLink="/" (click)="mobileOpen=false" class="nav-link block">Accueil</a>
-        <a routerLink="/services" (click)="mobileOpen=false" class="nav-link block">Services</a>
-        <ng-container *ngIf="isAuthenticated$ | async">
-          <a routerLink="/dashboard" (click)="mobileOpen=false" class="nav-link block">Dashboard</a>
-          <a routerLink="/vehicles" (click)="mobileOpen=false" class="nav-link block">Véhicules</a>
-          <a routerLink="/appointments" (click)="mobileOpen=false" class="nav-link block">Rendez-vous</a>
-          <ng-container *ngIf="isAdmin$ | async">
-            <a routerLink="/admin/dashboard" (click)="mobileOpen=false" class="nav-link block text-primary-400">Admin Panel</a>
+        <ng-container *ngIf="!(isAdmin$ | async)">
+          <a routerLink="/" (click)="mobileOpen=false" class="nav-link block">Accueil</a>
+          <a routerLink="/services" (click)="mobileOpen=false" class="nav-link block">Services</a>
+          <ng-container *ngIf="isAuthenticated$ | async">
+            <a routerLink="/dashboard" (click)="mobileOpen=false" class="nav-link block">Dashboard</a>
+            <a routerLink="/vehicles" (click)="mobileOpen=false" class="nav-link block">Véhicules</a>
+            <a routerLink="/appointments" (click)="mobileOpen=false" class="nav-link block">Rendez-vous</a>
           </ng-container>
+        </ng-container>
+        <ng-container *ngIf="isAdmin$ | async">
+          <a routerLink="/admin/dashboard" (click)="mobileOpen=false" class="nav-link block text-primary-400">Admin Panel</a>
+        </ng-container>
+        <ng-container *ngIf="isAuthenticated$ | async">
           <button (click)="logout(); mobileOpen=false" class="text-left nav-link block text-red-400 w-full">Déconnexion</button>
         </ng-container>
         <ng-container *ngIf="!(isAuthenticated$ | async)">

@@ -1,9 +1,9 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, OnDestroy } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { RouterModule } from '@angular/router';
+import { Router, RouterModule } from '@angular/router';
 import { Store } from '@ngrx/store';
-import { Observable } from 'rxjs';
-import { map } from 'rxjs/operators';
+import { Observable, Subject } from 'rxjs';
+import { map, takeUntil } from 'rxjs/operators';
 import { selectCurrentUser } from '../../store/auth/auth.selectors';
 import { VehiclesActions } from '../../store/vehicles/vehicles.actions';
 import { AppointmentsActions } from '../../store/appointments/appointments.actions';
@@ -20,7 +20,7 @@ import { SidebarComponent } from '../../components/sidebar/sidebar.component';
   imports: [CommonModule, RouterModule, SidebarComponent],
   templateUrl: './dashboard.component.html',
 })
-export class DashboardComponent implements OnInit {
+export class DashboardComponent implements OnInit, OnDestroy {
   user$: Observable<User | null>;
   vehicles$: Observable<Vehicle[]>;
   appointments$: Observable<Appointment[]>;
@@ -28,8 +28,9 @@ export class DashboardComponent implements OnInit {
   pendingCount$: Observable<number>;
   recentAppointments$: Observable<Appointment[]>;
   recentVehicles$: Observable<Vehicle[]>;
+  private destroy$ = new Subject<void>();
 
-  constructor(private store: Store) {
+  constructor(private store: Store, private router: Router) {
     this.user$ = this.store.select(selectCurrentUser);
     this.vehicles$ = this.store.select(selectAllVehicles);
     this.appointments$ = this.store.select(selectAllAppointments);
@@ -48,8 +49,19 @@ export class DashboardComponent implements OnInit {
   }
 
   ngOnInit() {
+    this.user$.pipe(takeUntil(this.destroy$)).subscribe(user => {
+      if (user?.role === 'ADMIN') {
+        this.router.navigate(['/admin/dashboard']);
+      }
+    });
+
     this.store.dispatch(VehiclesActions.loadMyVehicles());
     this.store.dispatch(AppointmentsActions.loadMyAppointments());
+  }
+
+  ngOnDestroy() {
+    this.destroy$.next();
+    this.destroy$.complete();
   }
 
   getStatutClass(statut: string): string {
