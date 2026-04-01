@@ -2,6 +2,7 @@ package com.automotive.service;
 
 import com.automotive.dto.*;
 import com.automotive.model.User;
+import com.automotive.enums.Role;
 import com.automotive.repository.UserRepository;
 import com.automotive.security.JwtUtil;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -39,7 +40,7 @@ public class UserService {
                 .email(request.getEmail())
                 .telephone(request.getTelephone())
                 .motDePasse(passwordEncoder.encode(request.getMotDePasse()))
-                .role(User.Role.CLIENT)
+                .role(Role.CLIENT)
                 .actif(true)
                 .build();
 
@@ -134,7 +135,7 @@ public class UserService {
     }
 
     public List<UserDTO> getAllClients() {
-        return userRepository.findByRole(User.Role.CLIENT)
+        return userRepository.findByRole(Role.CLIENT)
                 .stream()
                 .map(this::convertToDTO)
                 .collect(Collectors.toList());
@@ -154,7 +155,7 @@ public class UserService {
                 .email(userDTO.getEmail())
                 .telephone(userDTO.getTelephone())
                 .motDePasse(passwordEncoder.encode(password))
-                .role(User.Role.valueOf(userDTO.getRole()))
+                .role(Role.valueOf(userDTO.getRole()))
                 .actif(true)
                 .build();
 
@@ -169,7 +170,7 @@ public class UserService {
                     user.setPrenom(userDTO.getPrenom());
                     user.setTelephone(userDTO.getTelephone());
                     if (userDTO.getRole() != null) {
-                        user.setRole(User.Role.valueOf(userDTO.getRole()));
+                        user.setRole(Role.valueOf(userDTO.getRole()));
                     }
                     return convertToDTO(userRepository.save(user));
                 })
@@ -198,7 +199,7 @@ public class UserService {
     }
 
     public long countClients() {
-        return userRepository.countByRole(User.Role.CLIENT);
+        return userRepository.countByRole(Role.CLIENT);
     }
 
     public boolean existsByEmail(String email) {
