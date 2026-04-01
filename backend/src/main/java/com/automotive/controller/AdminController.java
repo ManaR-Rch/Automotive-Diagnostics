@@ -2,6 +2,7 @@ package com.automotive.controller;
 
 import com.automotive.dto.*;
 import com.automotive.model.Service;
+import com.automotive.enums.Categorie;
 import com.automotive.service.RendezVousService;
 import com.automotive.service.ServiceService;
 import com.automotive.service.UserService;
@@ -216,7 +217,7 @@ public class AdminController {
       
       // Valider le format de la categorie
       try {
-        Service.Categorie.valueOf(serviceDTO.getCategorie().trim().toUpperCase());
+        Categorie.valueOf(serviceDTO.getCategorie().trim().toUpperCase());
       } catch (IllegalArgumentException e) {
         return ResponseEntity.badRequest().body(Map.of("message", "Categorie invalide. Utilisez: MAINTENANCE, REPARATION, DIAGNOSTIC, CONTROLE_TECHNIQUE, AUTRE"));
       }
