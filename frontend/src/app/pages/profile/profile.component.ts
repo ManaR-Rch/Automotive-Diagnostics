@@ -63,7 +63,20 @@ export class ProfileComponent implements OnInit {
   saveProfile(): void {
     if (this.form.invalid) { this.form.markAllAsTouched(); return; }
     this.authService.updateProfile(this.form.value).subscribe({
-      next: () => { this.saved = true; this.editMode = false; setTimeout(() => this.saved = false, 3000); },
+      next: (updatedUser) => { 
+        this.saved = true; 
+        this.editMode = false; 
+        
+        const stored = localStorage.getItem('user');
+        if (stored) {
+          const parsed = JSON.parse(stored);
+          localStorage.setItem('user', JSON.stringify({ ...parsed, ...updatedUser }));
+        }
+        
+        this.store.dispatch(AuthActions.loadProfileSuccess({ user: updatedUser }));
+        
+        setTimeout(() => this.saved = false, 3000); 
+      },
       error: () => {}
     });
   }
