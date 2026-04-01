@@ -5,6 +5,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import com.automotive.enums.Role;
 import java.util.Set;
 import java.time.LocalDateTime;
 
@@ -54,9 +55,5 @@ public class User {
     @PrePersist
     protected void onCreate() {
         dateInscription = LocalDateTime.now();
-    }
-
-    public enum Role {
-        CLIENT, ADMIN
     }
 }
