@@ -5,6 +5,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import com.automotive.enums.Carburant;
 
 @Entity
 @Table(name = "vehicules")
@@ -43,8 +44,4 @@ public class Vehicule {
 
     @Column(name = "est_principal")
     private Boolean estPrincipal = false;
-
-    public enum Carburant {
-        ESSENCE, DIESEL, HYBRIDE, ELECTRIQUE
-    }
 }
