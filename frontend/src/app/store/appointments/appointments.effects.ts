@@ -1,7 +1,10 @@
 import { inject } from '@angular/core';
 import { Actions, createEffect, ofType } from '@ngrx/effects';
-import { catchError, map, switchMap } from 'rxjs/operators';
+import { catchError, filter, map, switchMap, withLatestFrom } from 'rxjs/operators';
 import { of } from 'rxjs';
+import { Store } from '@ngrx/store';
+import { selectCurrentUser } from '../auth/auth.selectors';
+import { WebSocketService } from '../../core/services/websocket.service';
 import { AppointmentsActions } from './appointments.actions';
 import { AppointmentService } from '../../services/appointment.service';
 
@@ -48,3 +51,44 @@ export const cancelAppointmentEffect = createEffect(
     ),
   { functional: true }
 );
+
+export const webSocketClientNewAppointmentEffect = createEffect(
+  (ws = inject(WebSocketService), store = inject(Store)) =>
+    ws.newRdv$.pipe(
+      withLatestFrom(store.select(selectCurrentUser)),
+      filter(([notification, user]) => {
+        return !!user && user.role !== 'ADMIN' && notification.userEmail === user.email;
+      }),
+      map(([notification]) => AppointmentsActions.webSocketClientNewAppointment({
+        appointment: {
+          id: notification.id,
+          statut: notification.statut,
+          dateRdv: notification.dateRdv,
+          serviceNom: notification.service,
+          vehiculeNom: notification.vehicule
+        } as any
+      })),
+      catchError(err => { console.error('WebSocket error:', err); return of(); })
+    ),
+  { functional: true }
+);
+
+export const webSocketClientUpdateAppointmentEffect = createEffect(
+  (ws = inject(WebSocketService), store = inject(Store)) =>
+    ws.updateRdv$.pipe(
+      withLatestFrom(store.select(selectCurrentUser)),
+      filter(([notification, user]) => {
+        return !!user && user.role !== 'ADMIN' && notification.userEmail === user.email;
+      }),
+      map(([notification]) => AppointmentsActions.webSocketClientUpdateAppointment({
+        appointment: {
+          id: notification.id,
+          statut: notification.statut,
+          dateRdv: notification.dateRdv,
+        } as any
+      })),
+      catchError(err => { console.error('WebSocket error:', err); return of(); })
+    ),
+  { functional: true }
+);
+
