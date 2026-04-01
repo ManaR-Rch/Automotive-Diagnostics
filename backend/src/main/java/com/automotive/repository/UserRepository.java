@@ -1,6 +1,7 @@
 package com.automotive.repository;
 
 import com.automotive.model.User;
+import com.automotive.enums.Role;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
@@ -17,9 +18,9 @@ public interface UserRepository extends JpaRepository<User, Long> {
 
     boolean existsByTelephone(String telephone);
 
-    List<User> findByRole(User.Role role);
+    List<User> findByRole(Role role);
 
     List<User> findByActif(Boolean actif);
 
-    long countByRole(User.Role role);
+    long countByRole(Role role);
 }
