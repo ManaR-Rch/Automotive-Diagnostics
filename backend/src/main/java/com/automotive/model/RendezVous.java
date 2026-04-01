@@ -7,6 +7,8 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
+import com.automotive.enums.Statut;
+import com.automotive.enums.Urgence;
 
 @Entity
 @Table(name = "rendez_vous")
@@ -70,13 +72,5 @@ public class RendezVous {
     @PreUpdate
     protected void onUpdate() {
         dateModification = LocalDateTime.now();
-    }
-
-    public enum Urgence {
-        FAIBLE, NORMALE, HAUTE, CRITIQUE, URGENTE
-    }
-
-    public enum Statut {
-        CONFIRME, EN_COURS, TERMINE, ANNULE
     }
 }
