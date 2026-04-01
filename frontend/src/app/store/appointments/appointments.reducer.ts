@@ -27,4 +27,12 @@ export const appointmentsReducer = createReducer(
   on(AppointmentsActions.loadMyAppointmentsFailure, AppointmentsActions.createAppointmentFailure, AppointmentsActions.cancelAppointmentFailure,
     (s, { error }) => ({ ...s, loading: false, error })),
   on(AppointmentsActions.clearError, s => ({ ...s, error: null, success: null })),
+  on(AppointmentsActions.webSocketClientNewAppointment, (s, { appointment }) => {
+    if (s.appointments.some(a => a.id === appointment.id)) return s;
+    return { ...s, appointments: [...s.appointments, appointment] };
+  }),
+  on(AppointmentsActions.webSocketClientUpdateAppointment, (s, { appointment }) => ({
+    ...s,
+    appointments: s.appointments.map(a => a.id === appointment.id ? { ...a, ...appointment } : a)
+  }))
 );
