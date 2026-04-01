@@ -6,6 +6,7 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import java.util.Set;
+import com.automotive.enums.Categorie;
 
 @Entity
 @Table(name = "services")
@@ -46,8 +47,4 @@ public class Service {
 
     @OneToMany(mappedBy = "service", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private Set<RendezVous> rendezVous;
-
-    public enum Categorie {
-        MAINTENANCE, REPARATION, DIAGNOSTIC, CONTROLE_TECHNIQUE, AUTRE
-    }
 }
