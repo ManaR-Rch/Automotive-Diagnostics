@@ -14,5 +14,7 @@ export const AppointmentsActions = createActionGroup({
     'Cancel Appointment Success': props<{ appointment: Appointment }>(),
     'Cancel Appointment Failure': props<{ error: string }>(),
     'Clear Error':          emptyProps(),
+    'WebSocket Client New Appointment': props<{ appointment: Appointment }>(),
+    'WebSocket Client Update Appointment': props<{ appointment: Appointment }>(),
   }
 });
