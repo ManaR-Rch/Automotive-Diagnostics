@@ -1,6 +1,7 @@
 package com.automotive.repository;
 
 import com.automotive.model.RendezVous;
+import com.automotive.enums.Statut;
 import com.automotive.model.User;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
@@ -16,9 +17,9 @@ public interface RendezVousRepository extends JpaRepository<RendezVous, Long> {
 
     boolean existsByService_Id(Long serviceId);
 
-    List<RendezVous> findByStatut(RendezVous.Statut statut);
+    List<RendezVous> findByStatut(Statut statut);
 
-    long countByStatut(RendezVous.Statut statut);
+    long countByStatut(Statut statut);
 
     @Query("SELECT r FROM RendezVous r WHERE r.dateRdv BETWEEN :dateDebut AND :dateFin")
     List<RendezVous> findByDateRange(@Param("dateDebut") LocalDateTime dateDebut,
