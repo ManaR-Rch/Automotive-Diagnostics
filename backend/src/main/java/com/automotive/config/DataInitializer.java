@@ -1,7 +1,9 @@
 package com.automotive.config;
 
 import com.automotive.model.User;
+import com.automotive.enums.Role;
 import com.automotive.model.Service;
+import com.automotive.enums.Categorie;
 import com.automotive.repository.UserRepository;
 import com.automotive.repository.ServiceRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -30,7 +32,7 @@ public class DataInitializer implements CommandLineRunner {
             .prenom("Garage")
             .email("admin@garage.com")
             .telephone("0600000000")
-            .role(User.Role.ADMIN)
+            .role(Role.ADMIN)
             .actif(true)
             .build());
 
@@ -38,7 +40,7 @@ public class DataInitializer implements CommandLineRunner {
     admin.setPrenom("Garage");
     admin.setEmail("admin@garage.com");
     admin.setTelephone("0600000000");
-    admin.setRole(User.Role.ADMIN);
+    admin.setRole(Role.ADMIN);
     admin.setActif(true);
     admin.setMotDePasse(passwordEncoder.encode("admin123"));
     userRepository.save(admin);
@@ -50,7 +52,7 @@ public class DataInitializer implements CommandLineRunner {
           Service.builder()
               .nom("Vidange")
               .description("Vidange huile moteur et filtre")
-              .categorie(Service.Categorie.MAINTENANCE)
+              .categorie(Categorie.MAINTENANCE)
               .dureeEstimee(60)
               .prixMin(50.0)
               .prixMax(80.0)
@@ -60,7 +62,7 @@ public class DataInitializer implements CommandLineRunner {
           Service.builder()
               .nom("Révision complète")
               .description("Révision complète du véhicule incluant tous les contrôles")
-              .categorie(Service.Categorie.MAINTENANCE)
+              .categorie(Categorie.MAINTENANCE)
               .dureeEstimee(180)
               .prixMin(150.0)
               .prixMax(300.0)
@@ -70,7 +72,7 @@ public class DataInitializer implements CommandLineRunner {
           Service.builder()
               .nom("Diagnostic électronique")
               .description("Diagnostic complet avec outil de diagnostic")
-              .categorie(Service.Categorie.DIAGNOSTIC)
+              .categorie(Categorie.DIAGNOSTIC)
               .dureeEstimee(45)
               .prixMin(40.0)
               .prixMax(60.0)
@@ -80,7 +82,7 @@ public class DataInitializer implements CommandLineRunner {
           Service.builder()
               .nom("Changement de freins")
               .description("Remplacement des plaquettes et/ou disques de frein")
-              .categorie(Service.Categorie.REPARATION)
+              .categorie(Categorie.REPARATION)
               .dureeEstimee(120)
               .prixMin(100.0)
               .prixMax(250.0)
@@ -90,7 +92,7 @@ public class DataInitializer implements CommandLineRunner {
           Service.builder()
               .nom("Contrôle technique")
               .description("Passage au contrôle technique")
-              .categorie(Service.Categorie.CONTROLE_TECHNIQUE)
+              .categorie(Categorie.CONTROLE_TECHNIQUE)
               .dureeEstimee(60)
               .prixMin(70.0)
               .prixMax(90.0)
@@ -100,7 +102,7 @@ public class DataInitializer implements CommandLineRunner {
           Service.builder()
               .nom("Climatisation")
               .description("Recharge et vérification du système de climatisation")
-              .categorie(Service.Categorie.MAINTENANCE)
+              .categorie(Categorie.MAINTENANCE)
               .dureeEstimee(60)
               .prixMin(60.0)
               .prixMax(120.0)
