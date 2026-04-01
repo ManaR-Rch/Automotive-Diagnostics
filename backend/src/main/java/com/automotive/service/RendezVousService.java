@@ -2,6 +2,8 @@ package com.automotive.service;
 
 import com.automotive.dto.RendezVousDTO;
 import com.automotive.model.*;
+import com.automotive.enums.Urgence;
+import com.automotive.enums.Statut;
 import com.automotive.repository.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -40,7 +42,7 @@ public class RendezVousService {
     }
 
     public List<RendezVousDTO> getRendezVousByStatut(String statut) {
-        return rendezVousRepository.findByStatut(RendezVous.Statut.valueOf(statut))
+        return rendezVousRepository.findByStatut(Statut.valueOf(statut))
                 .stream()
                 .map(this::convertToDTO)
                 .collect(Collectors.toList());
@@ -59,7 +61,7 @@ public class RendezVousService {
         rendezVous.setUser(user);
         rendezVous.setVehicule(vehicule);
         rendezVous.setService(service);
-        rendezVous.setStatut(RendezVous.Statut.CONFIRME);
+        rendezVous.setStatut(Statut.CONFIRME);
 
         RendezVous savedRendezVous = rendezVousRepository.save(rendezVous);
         return convertToDTO(savedRendezVous);
@@ -82,7 +84,7 @@ public class RendezVousService {
     public RendezVousDTO updateStatut(Long id, String statut) {
         return rendezVousRepository.findById(id)
                 .map(rendezVous -> {
-                    rendezVous.setStatut(RendezVous.Statut.valueOf(statut));
+                    rendezVous.setStatut(Statut.valueOf(statut));
                     return convertToDTO(rendezVousRepository.save(rendezVous));
                 })
                 .orElse(null);
@@ -108,7 +110,7 @@ public class RendezVousService {
     }
 
     public long countByStatut(String statut) {
-        return rendezVousRepository.countByStatut(RendezVous.Statut.valueOf(statut));
+        return rendezVousRepository.countByStatut(Statut.valueOf(statut));
     }
 
     private RendezVousDTO convertToDTO(RendezVous rendezVous) {
@@ -139,26 +141,26 @@ public class RendezVousService {
                 .build();
     }
 
-    private RendezVous.Urgence parseUrgence(String urgence) {
+    private Urgence parseUrgence(String urgence) {
         if (urgence == null || urgence.isBlank()) {
-            return RendezVous.Urgence.NORMALE;
+            return Urgence.NORMALE;
         }
 
         String normalized = urgence.trim().toUpperCase();
         return switch (normalized) {
-            case "FAIBLE" -> RendezVous.Urgence.FAIBLE;
-            case "NORMALE" -> RendezVous.Urgence.NORMALE;
-            case "HAUTE" -> RendezVous.Urgence.HAUTE;
-            case "CRITIQUE" -> RendezVous.Urgence.CRITIQUE;
-            case "URGENTE" -> RendezVous.Urgence.URGENTE;
+            case "FAIBLE" -> Urgence.FAIBLE;
+            case "NORMALE" -> Urgence.NORMALE;
+            case "HAUTE" -> Urgence.HAUTE;
+            case "CRITIQUE" -> Urgence.CRITIQUE;
+            case "URGENTE" -> Urgence.URGENTE;
             default -> throw new IllegalArgumentException("Niveau d'urgence invalide: " + urgence);
         };
     }
 
-    private String normalizeUrgenceForDto(RendezVous.Urgence urgence) {
+    private String normalizeUrgenceForDto(Urgence urgence) {
         if (urgence == null) {
-            return RendezVous.Urgence.NORMALE.name();
+            return Urgence.NORMALE.name();
         }
-        return urgence == RendezVous.Urgence.URGENTE ? RendezVous.Urgence.HAUTE.name() : urgence.name();
+        return urgence == Urgence.URGENTE ? Urgence.HAUTE.name() : urgence.name();
     }
 }
