@@ -2,6 +2,7 @@ package com.automotive.service;
 
 import com.automotive.dto.VehiculeDTO;
 import com.automotive.model.Vehicule;
+import com.automotive.enums.Carburant;
 import com.automotive.model.User;
 import com.automotive.repository.VehiculeRepository;
 import com.automotive.repository.UserRepository;
@@ -84,7 +85,7 @@ public class VehiculeService {
                 .marque(vehiculeDTO.getMarque())
                 .modele(vehiculeDTO.getModele())
                 .annee(vehiculeDTO.getAnnee())
-                .carburant(Vehicule.Carburant.valueOf(vehiculeDTO.getCarburant()))
+                .carburant(Carburant.valueOf(vehiculeDTO.getCarburant()))
                 .kilometrage(vehiculeDTO.getKilometrage())
                 .vin(vehiculeDTO.getVin())
                 .estPrincipal(vehiculeDTO.getEstPrincipal())
