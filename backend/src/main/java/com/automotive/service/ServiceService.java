@@ -2,6 +2,7 @@ package com.automotive.service;
 
 import com.automotive.dto.ServiceDTO;
 import com.automotive.model.Service;
+import com.automotive.enums.Categorie;
 import com.automotive.repository.RendezVousRepository;
 import com.automotive.repository.ServiceRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -44,7 +45,7 @@ public class ServiceService {
     }
 
     public List<ServiceDTO> getServicesByCategorie(String categorie) {
-        return serviceRepository.findByCategorie(Service.Categorie.valueOf(categorie))
+        return serviceRepository.findByCategorie(Categorie.valueOf(categorie))
                 .stream()
                 .map(this::convertToDTO)
                 .collect(Collectors.toList());
@@ -64,7 +65,7 @@ public class ServiceService {
                     service.setDescription(serviceDTO.getDescription());
                     String categorie = serviceDTO.getCategorie();
                     if (categorie != null && !categorie.isBlank()) {
-                        service.setCategorie(Service.Categorie.valueOf(categorie.trim().toUpperCase()));
+                        service.setCategorie(Categorie.valueOf(categorie.trim().toUpperCase()));
                     }
                     service.setDureeEstimee(serviceDTO.getDureeEstimee());
                     service.setPrixMin(serviceDTO.getPrixMin());
@@ -130,7 +131,7 @@ public class ServiceService {
         return Service.builder()
                 .nom(serviceDTO.getNom())
                 .description(serviceDTO.getDescription())
-                .categorie(Service.Categorie.valueOf(categorie.trim().toUpperCase()))
+                .categorie(Categorie.valueOf(categorie.trim().toUpperCase()))
                 .dureeEstimee(serviceDTO.getDureeEstimee())
                 .prixMin(serviceDTO.getPrixMin())
                 .prixMax(serviceDTO.getPrixMax())
