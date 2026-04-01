@@ -1,16 +1,16 @@
-﻿<div class="flex min-h-screen bg-dark-900">
+<div class="flex min-h-screen bg-dark-900">
   <app-sidebar></app-sidebar>
   <main class="flex-1 overflow-auto">
     <div class="p-6 lg:p-8 fade-in">
       <!-- Header -->
       <div class="flex items-center justify-between mb-8">
         <div>
-          <h1 class="text-2xl font-bold text-white">Mes Véhicules</h1>
-          <p class="text-gray-500 text-sm mt-1">Gérez vos véhicules enregistrés</p>
+          <h1 class="text-2xl font-bold text-white">Mes Vehicules</h1>
+          <p class="text-gray-500 text-sm mt-1">Gerez vos vehicules enregistres</p>
         </div>
         <button (click)="openCreate()" class="btn-primary flex items-center gap-2">
           <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/></svg>
-          Ajouter un véhicule
+          Ajouter un vehicule
         </button>
       </div>
 
@@ -42,7 +42,7 @@
             <!-- Card Body -->
             <div class="px-5 py-4 grid grid-cols-2 gap-3 text-sm">
               <div>
-                <span class="text-gray-600 text-xs uppercase tracking-wide">Année</span>
+                <span class="text-gray-600 text-xs uppercase tracking-wide">Annee</span>
                 <p class="text-white mt-0.5">{{ v.annee }}</p>
               </div>
               <div>
@@ -54,7 +54,7 @@
                 <p class="text-white mt-0.5">—</p>
               </div>
               <div>
-                <span class="text-gray-600 text-xs uppercase tracking-wide">Kilométrage</span>
+                <span class="text-gray-600 text-xs uppercase tracking-wide">Kilometrage</span>
                 <p class="text-white mt-0.5">{{ v.kilometrage | number }} km</p>
               </div>
               <div *ngIf="v.vin">
@@ -76,9 +76,9 @@
             <div class="w-20 h-20 bg-dark-800 rounded-full flex items-center justify-center mb-4">
               <svg class="w-10 h-10 text-gray-600" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M8 17a2 2 0 100-4 2 2 0 000 4zM16 17a2 2 0 100-4 2 2 0 000 4zM5 9l2-5h10l2 5H5zM3 9h18v5a2 2 0 01-2 2H5a2 2 0 01-2-2V9z"/></svg>
             </div>
-            <h3 class="text-white font-semibold mb-2">Aucun véhicule enregistré</h3>
-            <p class="text-gray-500 text-sm mb-6">Commencez par ajouter votre premier véhicule</p>
-            <button (click)="openCreate()" class="btn-primary">Ajouter mon premier véhicule</button>
+            <h3 class="text-white font-semibold mb-2">Aucun vehicule enregistre</h3>
+            <p class="text-gray-500 text-sm mb-6">Commencez par ajouter votre premier vehicule</p>
+            <button (click)="openCreate()" class="btn-primary">Ajouter mon premier vehicule</button>
           </div>
         </ng-template>
       </ng-container>
@@ -90,7 +90,7 @@
 <div *ngIf="showModal" class="fixed inset-0 bg-black/70 backdrop-blur-sm z-50 flex items-center justify-center p-4" (click)="closeModal()">
   <div class="bg-dark-800 border border-dark-600 rounded-2xl w-full max-w-xl max-h-[90vh] overflow-y-auto shadow-2xl" (click)="$event.stopPropagation()">
     <div class="flex items-center justify-between px-6 py-4 border-b border-dark-600">
-      <h2 class="text-white font-bold text-lg">{{ editMode ? 'Modifier le véhicule' : 'Ajouter un véhicule' }}</h2>
+      <h2 class="text-white font-bold text-lg">{{ editMode ? 'Modifier le vehicule' : 'Ajouter un vehicule' }}</h2>
       <button (click)="closeModal()" class="text-gray-500 hover:text-white p-1 hover:bg-dark-600 rounded-lg transition-colors">
         <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
       </button>
@@ -103,14 +103,14 @@
           <p *ngIf="field('marque')?.invalid && field('marque')?.touched" class="text-red-400 text-xs mt-1">Marque requise</p>
         </div>
         <div>
-          <label class="form-label">Modèle *</label>
+          <label class="form-label">Modele *</label>
           <input formControlName="modele" type="text" placeholder="Corolla, Serie 3…" class="form-input" [class.border-red-600]="field('modele')?.invalid && field('modele')?.touched">
-          <p *ngIf="field('modele')?.invalid && field('modele')?.touched" class="text-red-400 text-xs mt-1">Modèle requis</p>
+          <p *ngIf="field('modele')?.invalid && field('modele')?.touched" class="text-red-400 text-xs mt-1">Modele requis</p>
         </div>
       </div>
       <div class="grid grid-cols-2 gap-4">
         <div>
-          <label class="form-label">Année *</label>
+          <label class="form-label">Annee *</label>
           <input formControlName="annee" type="number" placeholder="2020" class="form-input" [class.border-red-600]="field('annee')?.invalid && field('annee')?.touched">
         </div>
         <div>
@@ -122,7 +122,7 @@
       </div>
       <div class="grid grid-cols-2 gap-4">
         <div>
-          <label class="form-label">Kilométrage</label>
+          <label class="form-label">Kilometrage</label>
           <input formControlName="kilometrage" type="number" placeholder="50000" class="form-input">
         </div>
         <div>
@@ -132,7 +132,7 @@
       </div>
       <div class="flex items-center gap-3 pt-1">
         <input formControlName="estPrincipal" id="principal" type="checkbox" class="w-4 h-4 rounded accent-primary-600">
-        <label for="principal" class="text-gray-300 text-sm cursor-pointer">Définir comme véhicule principal</label>
+        <label for="principal" class="text-gray-300 text-sm cursor-pointer">Definir comme vehicule principal</label>
       </div>
       <div class="flex gap-3 pt-2">
         <button type="button" (click)="closeModal()" class="flex-1 btn-secondary">Annuler</button>
@@ -148,8 +148,8 @@
     <div class="w-14 h-14 bg-red-900/40 rounded-full flex items-center justify-center mx-auto mb-4">
       <svg class="w-7 h-7 text-red-400" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/></svg>
     </div>
-    <h3 class="text-white font-bold mb-2">Supprimer ce véhicule ?</h3>
-    <p class="text-gray-500 text-sm mb-6">Cette action est irréversible.</p>
+    <h3 class="text-white font-bold mb-2">Supprimer ce vehicule ?</h3>
+    <p class="text-gray-500 text-sm mb-6">Cette action est irreversible.</p>
     <div class="flex gap-3">
       <button (click)="deleteConfirmId = null" class="flex-1 btn-secondary">Annuler</button>
       <button (click)="deleteVehicle()" class="flex-1 bg-red-600 hover:bg-red-700 text-white font-medium py-2.5 px-4 rounded-lg transition-colors">Supprimer</button>
